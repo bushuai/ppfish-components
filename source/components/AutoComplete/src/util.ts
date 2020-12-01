@@ -76,7 +76,7 @@ export function getMapKey(value) {
   return `${typeof value}-${value}`;
 }
 
-export function preventDefaultEvent(e) {
+export function preventDefaultEvent(e: React.MouseEvent<Element>) {
   e.preventDefault();
 }
 
@@ -124,7 +124,7 @@ export function getSelectKeys(menuItems, value) {
   return selectedKeys;
 }
 
-export const UNSELECTABLE_STYLE = {
+export const UNSELECTABLE_STYLE: React.CSSProperties = {
   userSelect: 'none',
   WebkitUserSelect: 'none',
 };
@@ -184,8 +184,8 @@ export function validateOptionValue(value, props) {
   }
 }
 
-export function saveRef(instance, name) {
-  return (node) => {
+export function saveRef(instance: React.ReactInstance, name: string) {
+  return (node: React.ReactNode) => {
     instance[name] = node;
   };
 }

@@ -91,8 +91,8 @@ const SelectPropTypes = {
 // export { Option, OptGroup };
 
 export default class Select extends React.Component<SelectProps, {}> {
-  static Option = Option as React.ClassicComponentClass<OptionProps>;
-  static OptGroup = OptGroup as React.ClassicComponentClass<OptGroupProps>;
+  static Option = Option;
+  static OptGroup = OptGroup;
 
   static SECRET_COMBOBOX_MODE_DO_NOT_USE = 'SECRET_COMBOBOX_MODE_DO_NOT_USE';
 

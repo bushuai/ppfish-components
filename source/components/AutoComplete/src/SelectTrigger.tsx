@@ -1,9 +1,9 @@
 import Trigger from 'rc-trigger';
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import DropdownMenu from './DropdownMenu';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom';
 import { isSingleMode, saveRef } from './util';
 
 Trigger.displayName = 'Trigger';
@@ -27,7 +27,41 @@ const BUILT_IN_PLACEMENTS = {
   },
 };
 
-export default class SelectTrigger extends React.Component {
+export interface SelectTriggerProps {
+  onMenuSelect: any
+  onMenuDeselect: any
+  onPopupScroll: any
+  value: any
+  backfillValue: any
+  firstActiveValue: any
+  defaultActiveFirstOption: any
+  dropdownMenuStyle: any
+  transitionName: any
+  animation: any
+  prefixCls: any
+  onPopupFocus: any
+  showAction: any
+  onDropdownVisibleChange: any
+  getPopupContainer: any
+  multiple: any
+  visible: any
+  inputValue: any
+  dropdownAlign: any
+  disabled: any
+  showSearch: any
+  dropdownClassName: any
+  dropdownStyle: any
+  dropdownMatchSelectWidth: any
+  options: any
+}
+
+export interface SelectTriggerState {
+  dropdownWidth: any
+}
+
+export default class SelectTrigger extends React.Component<SelectTriggerProps, SelectTriggerState> {
+  static displayName = 'SelectTrigger';
+
   static propTypes = {
     onPopupFocus: PropTypes.func,
     onPopupScroll: PropTypes.func,
@@ -50,6 +84,11 @@ export default class SelectTrigger extends React.Component {
     showAction: PropTypes.arrayOf(PropTypes.string),
   };
 
+  saveDropdownMenuRef = null
+  saveTriggerRef = null
+  dropdownMenuRef = null
+  triggerRef = null
+
   constructor(props) {
     super(props);
 
@@ -70,7 +109,8 @@ export default class SelectTrigger extends React.Component {
   }
 
   setDropdownWidth = () => {
-    const width = ReactDOM.findDOMNode(this).offsetWidth;
+    const width = (ReactDOM.findDOMNode(this) as HTMLElement).offsetWidth;
+
     if (width !== this.state.dropdownWidth) {
       this.setState({ dropdownWidth: width });
     }
@@ -178,5 +218,3 @@ export default class SelectTrigger extends React.Component {
     );
   }
 }
-
-SelectTrigger.displayName = 'SelectTrigger';
