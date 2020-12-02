@@ -5,10 +5,30 @@ import {polyfill} from 'react-lifecycles-compat';
 
 import Color from './helpers/color';
 import percentage from './helpers/percentage';
+import { PickedColor } from './Board';
+import { ModeTypes } from './Panel';
 
 const modesMap = ['RGB', 'HSB'];
 
-class Params extends React.Component {
+interface ParamsProps {
+  alpha: number
+  color: PickedColor
+  enableAlpha: boolean
+  enableHistory: boolean
+  mode: ModeTypes
+
+  onAlphaChange: (alpha: number) => void
+  onChange: (color: PickedColor, flag?: boolean) => void
+  rootPrefixCls: string
+}
+
+interface ParamsState {
+  color: PickedColor
+  hex: string
+  mode: ModeTypes
+}
+
+class Params extends React.Component<ParamsProps, ParamsState> {
 
   static propTypes = {
     alpha: PropTypes.number,
@@ -26,8 +46,13 @@ class Params extends React.Component {
     enableAlpha: true,
   };
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const newState = {};
+  static getDerivedStateFromProps: React.GetDerivedStateFromProps<ParamsProps, ParamsState> = (nextProps, prevState) => {
+    const newState: ParamsState = {
+      color: {},
+      hex: '',
+      mode: 'RGB'
+    }
+
     if ('color' in nextProps) {
       newState.color = nextProps.color;
       newState.hex = nextProps.color.hex;
@@ -116,7 +141,7 @@ class Params extends React.Component {
 
     const modeIndex = (modesMap.indexOf(mode) + 1) % modesMap.length;
 
-    mode = modesMap[modeIndex];
+    mode = modesMap[modeIndex] as ModeTypes;
 
     this.setState({
       mode,
@@ -203,7 +228,7 @@ class Params extends React.Component {
           <input
             className={`${prefixCls}-hex`}
             type="text"
-            maxLength="6"
+            maxLength={6}
             onKeyPress={this.handleHexPress}
             onBlur={this.handleHexBlur}
             onChange={this.handleHexChange}

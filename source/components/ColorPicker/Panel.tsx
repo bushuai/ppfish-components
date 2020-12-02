@@ -1,21 +1,46 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import {polyfill} from 'react-lifecycles-compat';
 
 import Color from './helpers/color';
 import typeColor from './utils/validationColor';
-import Board from './Board';
+import Board, { PickedColor } from './Board';
 import Preview from './Preview';
 import Ribbon from './Ribbon';
 import Alpha from './Alpha';
 import Params from './Params';
 import History from './History';
 
-function noop() {
+function noop() {}
+
+export type ModeTypes = 'RGB' | 'HSL' | 'HSB'
+
+interface PanelProps {
+  alpha?: number
+  className?: string
+  color?: string
+  colorHistory?: PickedColor[]
+  defaultAlpha?: number
+  defaultColor?: string
+  enableAlpha?: boolean
+  enableHistory?: boolean
+  maxHistory?: number
+  mode?: ModeTypes
+  onBlur?: (node?: React.ReactNode) => void
+  onChange?: (node?: React.ReactNode) => void
+  onFocus?: (node?: React.ReactNode) => void
+  onMount?: (node?: React.ReactNode) => void
+  prefixCls?: string
+  style?: CSSProperties
 }
 
-class Panel extends React.Component {
+interface PanelState {
+  color: any
+  alpha: number
+}
+
+class Panel extends React.Component<PanelProps, PanelState> {
 
   static propTypes = {
     alpha: PropTypes.number,
@@ -53,8 +78,12 @@ class Panel extends React.Component {
     style: {},
   };
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const newState = {};
+  static getDerivedStateFromProps: React.GetDerivedStateFromProps<PanelProps, PanelState> = (nextProps, prevState) => {
+    const newState: PanelState = {
+      color: '',
+      alpha: undefined
+    };
+
     if ('color' in nextProps) {
       newState.color = new Color(nextProps.color);
     }
@@ -64,7 +93,11 @@ class Panel extends React.Component {
     return newState;
   }
 
-  constructor(props) {
+  ref = null
+  _blurTimer = null
+  systemColorPickerOpen = null
+
+  constructor(props: PanelProps) {
     super(props);
 
     const alpha = typeof props.alpha === 'undefined'
@@ -178,7 +211,7 @@ class Panel extends React.Component {
         style={this.props.style}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
-        tabIndex="0"
+        tabIndex={0}
       >
         <div className={`${prefixCls}-inner`}>
           <Board rootPrefixCls={prefixCls} color={color} onChange={this.handleChange}/>
@@ -205,7 +238,7 @@ class Panel extends React.Component {
               />
             </div>
           </div>
-          <div className={`${prefixCls}-wrap`} style={{height: 40, marginTop: 6}}>
+          <div className={`${prefixCls}-wrap`} style={{height: 40, marginTop: 6,}}>
             <Params
               rootPrefixCls={prefixCls}
               color={color}

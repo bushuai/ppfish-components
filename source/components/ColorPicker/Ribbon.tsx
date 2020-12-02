@@ -1,21 +1,22 @@
-import React from 'react';
-import {findDOMNode} from 'react-dom';
+import * as React from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
+import { PickedColor } from './Board';
 
-function rgbaColor(r, g, b, a) {
-  return `rgba(${[r, g, b, a / 100].join(',')})`;
+export interface RibbonProps {
+  color: PickedColor
+  onChange: (color: PickedColor) => void
+  rootPrefixCls: string
 }
 
-export default class Alpha extends React.Component {
-
+export default class Ribbon extends React.Component<RibbonProps, any> {
   static propTypes = {
-    alpha: PropTypes.number,
     color: PropTypes.object,
     onChange: PropTypes.func,
     rootPrefixCls: PropTypes.string,
   };
 
-  constructor(props) {
+  constructor(props: RibbonProps) {
     super(props);
   }
 
@@ -23,7 +24,7 @@ export default class Alpha extends React.Component {
     this.removeListeners();
   }
 
-  onMouseDown = e => {
+  onMouseDown = (e: React.MouseEvent) => {
     const x = e.clientX;
     const y = e.clientY;
 
@@ -36,7 +37,7 @@ export default class Alpha extends React.Component {
     window.addEventListener('mouseup', this.onDragEnd);
   };
 
-  onDrag = e => {
+  onDrag = (e) => {
     const x = e.clientX;
     const y = e.clientY;
     this.pointMoveTo({
@@ -55,27 +56,25 @@ export default class Alpha extends React.Component {
     this.removeListeners();
   };
 
-  getBackground = () => {
-    const {red, green, blue} = this.props.color;
-    const opacityGradient = `linear-gradient(to right, ${rgbaColor(red, green, blue, 0)} , ${rgbaColor(red, green, blue, 100)})`; // eslint-disable-line max-len
-    return opacityGradient;
-  };
-
   getPrefixCls = () => {
-    return `${this.props.rootPrefixCls}-alpha`;
+    return `${this.props.rootPrefixCls}-ribbon`;
   };
 
   pointMoveTo = coords => {
-    const rect = findDOMNode(this).getBoundingClientRect();
+    const rect = (ReactDOM.findDOMNode(this) as HTMLElement).getBoundingClientRect();
     const width = rect.width;
     let left = coords.x - rect.left;
-
     left = Math.max(0, left);
     left = Math.min(left, width);
 
-    const alpha = Math.round(left / width * 100);
+    const huePercent = left / width;
+    const hue = huePercent * 360;
 
-    this.props.onChange(alpha);
+    const {color} = this.props;
+
+    color.hue = hue;
+
+    this.props.onChange(color);
   };
 
   removeListeners = () => {
@@ -85,10 +84,12 @@ export default class Alpha extends React.Component {
 
   render() {
     const prefixCls = this.getPrefixCls();
+    const hue = this.props.color.hue;
+    const per = hue / 360 * 100;
+
     return (
       <div className={prefixCls}>
-        <div ref="bg" className={`${prefixCls}-bg`} style={{background: this.getBackground()}}/>
-        <span style={{left: `${this.props.alpha}%`}}/>
+        <span ref="point" style={{ left: `${per}%`, }}/>
         <div className={`${prefixCls}-handler`} onMouseDown={this.onMouseDown}/>
       </div>
     );

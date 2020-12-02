@@ -9,13 +9,45 @@ import typeColor from './utils/validationColor';
 import ColorPickerPanel from './Panel';
 import placements from "./placements";
 import Color from "./helpers/color";
-import Icon from '../Icon/index.tsx';
+import Icon from '../Icon';
 
-function noop() {
+function noop() {}
+
+interface QuickPanelProps {
+  __useInComponent?: boolean
+  alpha?: number
+  className?: string
+  color?: string
+  colorHistory?: any[]
+  colorMap?: string[]
+  defaultAlpha?: number
+  defaultColor?: string
+  disabled?: boolean
+  enableAlpha?: boolean
+  enableHistory?: boolean
+  getPopupContainer?: () => React.ReactNode
+  maxHistory?: number
+  mode?: 'RGB' | 'HSL' | ''
+  onBlur?: () => void
+  onChange?: ({ color: string, alpha: number }) => void
+  onFocus?: () => void
+  onMount?: (node: React.ReactNode) => void
+  onVisibleChange?: (visible: boolean) => void
+  prefixCls?: string
+  userSelectColor?: boolean
+  style?: object
+  popupStyle?: object
+  esc?: boolean
 }
 
-class QuickPanel extends React.Component {
+interface QuickPanelState {
+  color: string
+  alpha: number
+  visible: boolean
+  colorHistory: any[]
+}
 
+class QuickPanel extends React.Component<QuickPanelProps> {
   static propTypes = {
     __useInComponent: PropTypes.bool,
     alpha: PropTypes.number,
@@ -43,7 +75,7 @@ class QuickPanel extends React.Component {
     esc: PropTypes.bool,
   };
 
-  static defaultProps = {
+  static defaultProps: QuickPanelProps = {
     __useInComponent: false,
     className: '',
     colorHistory: [],
@@ -69,8 +101,20 @@ class QuickPanel extends React.Component {
     esc: true,
   };
 
+  state: Readonly<QuickPanelState> = {
+    visible: false,
+    alpha: 0,
+    color: '',
+    colorHistory: []
+  }
+
+  ref = null
+  _blurTimer = null
+  systemColorPickerOpen = null
+
   static getDerivedStateFromProps(nextProps, prevState) {
-    const newState = {};
+    const newState: QuickPanelState = null;
+
     if ('color' in nextProps) {
       newState.color = nextProps.color;
     }
@@ -168,7 +212,7 @@ class QuickPanel extends React.Component {
     const keyCode = e.keyCode;
     const {colorMap} = this.props;
     const {color, visible} = this.state;
-    const activeIndex = colorMap.indexOf(color);
+    const activeIndex = colorMap.indexOf(String(color));
     if (activeIndex === -1 || visible) return;
     // LEFT/RIGHT触发选择
     if (keyCode === KeyCode.LEFT) {
@@ -179,7 +223,7 @@ class QuickPanel extends React.Component {
     }
   };
 
-  setVisible = (visible, callback) => {
+  setVisible = (visible, callback?: any) => {
     if (this.state.visible !== visible) {
       this.setState({visible}, () => {
           if (typeof callback === 'function') callback();
@@ -188,7 +232,9 @@ class QuickPanel extends React.Component {
           //关闭时记录历史记录
           if (!this.state.visible && enableHistory) {
             const {color, alpha, colorHistory} = this.state;
-            if (colorHistory.length && color === colorHistory[0].color && alpha === colorHistory[0].alpha) return;
+
+            if (colorHistory && colorHistory.length && colorHistory[0] && color === colorHistory[0].color && alpha === colorHistory[0].alpha) return;
+
             this.setState({
               colorHistory: colorHistory.length >= maxHistory ?
                 [{color, alpha}, ...colorHistory.slice(0, -1)] : [{color, alpha}, ...colorHistory]
@@ -236,7 +282,7 @@ class QuickPanel extends React.Component {
         onFocus={this.onFocus}
         onKeyDown={this.handleSpnKeyDown}
         onBlur={this.onBlur}
-        tabIndex="0"
+        tabIndex={0}
       >
         <div className={`${prefixCls}-inner`}>
           {colorMap.map((color, i) => {
@@ -247,14 +293,14 @@ class QuickPanel extends React.Component {
               return (
                 <span key={i}
                       className={spnClasses}
-                      style={{background: color}}
+                      style={{background: color,}}
                       onClick={() => this.handleChange(color, 100)}/>
               );
             }
           )}
           {
             userSelectColor && !__useInComponent &&
-            < Trigger
+            <Trigger
               popup={
                 <div className={`${prefixCls}-content`} onKeyDown={this.handleKeyDown}>
                   <div className={`${prefixCls}-arrow`}/>

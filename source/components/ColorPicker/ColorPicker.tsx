@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties, ReactElement } from 'react';
 import {findDOMNode} from 'react-dom';
 import PropTypes from 'prop-types';
 import Trigger from 'rc-trigger';
@@ -6,10 +6,12 @@ import classNames from 'classnames';
 import {polyfill} from 'react-lifecycles-compat';
 
 import {KeyCode} from "../../utils";
-import ColorPickerPanel from './Panel';
+import ColorPickerPanel, { ModeTypes } from './Panel';
 import placements from './placements';
 import Color from './helpers/color';
+import Panel from './Panel';
 import QuickPanel from './QuickPanel';
+import { PickedColor } from './Board';
 
 function refFn(field, component) {
   this[field] = component;
@@ -19,10 +21,44 @@ function prevent(e) {
   e.preventDefault();
 }
 
-function noop() {
+function noop() {}
+
+interface ColorPickerProps {
+  alpha: number
+  children: React.ReactNode
+  className: string
+  color: string
+  colorMap: string[]
+  defaultAlpha: number
+  defaultColor: string
+  disabled: boolean
+  enableAlpha: boolean
+  enableHistory: boolean
+  maxHistory: number
+  mode: ModeTypes
+  onChange: (state: ColorPickerState) => void
+  onVisibleChange: (visible: boolean) => void
+  prefixCls: string
+  quickMode: boolean
+  style: CSSProperties
+  popupStyle: CSSProperties
+  esc: boolean
+  getPopupContainer: (e: any) => React.ReactNode
+  align: string
+  animation: string
+  transitionName: string
 }
 
-class ColorPicker extends React.Component {
+interface ColorPickerState {
+  color: string
+  alpha: number
+  visible: boolean
+  colorHistory: PickedColor[]
+}
+
+class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
+  static Panel = Panel
+  static QuickPanel = QuickPanel
 
   static propTypes = {
     alpha: PropTypes.number,
@@ -69,7 +105,13 @@ class ColorPicker extends React.Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const newState = {};
+    const newState: ColorPickerState = {
+      color: '',
+      alpha: nextProps.defaultAlpha,
+      visible: false,
+      colorHistory: []
+    }
+
     if ('color' in nextProps) {
       newState.color = nextProps.color;
     }
@@ -78,6 +120,9 @@ class ColorPicker extends React.Component {
     }
     return newState;
   }
+
+  saveTriggerRef = null
+  triggerInstance = null
 
   constructor(props) {
     super(props);
@@ -119,7 +164,7 @@ class ColorPicker extends React.Component {
     }
   };
 
-  setVisible = (visible, callback) => {
+  setVisible = (visible: boolean, callback?: any) => {
     if (this.state.visible !== visible) {
       this.setState({visible}, () => {
           if (typeof callback === 'function') callback();
@@ -185,7 +230,7 @@ class ColorPicker extends React.Component {
 
   focus = () => {
     if (!this.state.visible) {
-      findDOMNode(this).focus();
+      (findDOMNode(this) as HTMLElement).focus();
     }
   };
 
@@ -212,7 +257,7 @@ class ColorPicker extends React.Component {
     RGBA.push(this.state.alpha / 100);
 
     if (children) {
-      children = React.cloneElement(children, {
+      children = React.cloneElement(children as React.ReactElement<any>, {
         ref: this.saveTriggerRef,
         unselectable: 'unselectable',
         style: {

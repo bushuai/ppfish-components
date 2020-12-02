@@ -1,9 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Color from "./helpers/color";
+import { PickedColor } from './Board';
 
-export default class History extends React.Component {
+interface HistoryProps {
+  colorHistory: PickedColor[]
+  maxHistory: number
+  onHistoryClick: (node?: any) => void
+  prefixCls: string
+}
 
+export default class History extends React.Component<HistoryProps> {
   static propTypes = {
     colorHistory: PropTypes.array,
     maxHistory: PropTypes.number,
@@ -13,6 +20,7 @@ export default class History extends React.Component {
 
   render() {
     const {prefixCls, colorHistory, maxHistory} = this.props;
+
     let renderColors = [...colorHistory];
     if (colorHistory.length < maxHistory) {
       renderColors = [...renderColors, ...new Array(maxHistory - colorHistory.length)];

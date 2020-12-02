@@ -1,21 +1,41 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-
-import Color from './helpers/color';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import PropTypes from "prop-types";
+import Color from "./helpers/color";
 
 const WIDTH = 200;
 const HEIGHT = 150;
 
-export default class Board extends React.Component {
+export type PickedColor = {
+  alpha?: number;
+  red?: number;
+  blue?: number;
+  green?: number;
+  saturation?: number;
+  brightness?: number;
+  hue?: number;
+  hex?: string;
+  color?:
+    | string
+    | { r: number; g: number; b: number; a?: number }
+    | { h: number; s: number; v: number }
+    | { h: number; s: number; l: number };
+  toHexString?: () => string;
+};
+interface BoardProps {
+  color: PickedColor;
+  onChange: (color: PickedColor) => void;
+  rootPrefixCls: string;
+}
 
+export default class Board extends React.Component<BoardProps> {
   static propTypes = {
     color: PropTypes.object,
     onChange: PropTypes.func,
-    rootPrefixCls: PropTypes.string,
+    rootPrefixCls: PropTypes.string
   };
 
-  constructor(props) {
+  constructor(props: BoardProps) {
     super(props);
   }
 
@@ -34,9 +54,9 @@ export default class Board extends React.Component {
     this.removeListeners();
     const x = e.clientX;
     const y = e.clientY;
-    this.pointMoveTo({x, y});
-    window.addEventListener('mousemove', this.onBoardDrag);
-    window.addEventListener('mouseup', this.onBoardDragEnd);
+    this.pointMoveTo({ x, y });
+    window.addEventListener("mousemove", this.onBoardDrag);
+    window.addEventListener("mouseup", this.onBoardDragEnd);
   };
 
   onBoardTouchStart = e => {
@@ -46,9 +66,9 @@ export default class Board extends React.Component {
     this.removeTouchListeners();
     const x = e.targetTouches[0].clientX;
     const y = e.targetTouches[0].clientY;
-    this.pointMoveTo({x, y});
-    window.addEventListener('touchmove', this.onBoardTouchMove);
-    window.addEventListener('touchend', this.onBoardTouchEnd);
+    this.pointMoveTo({ x, y });
+    window.addEventListener("touchmove", this.onBoardTouchMove);
+    window.addEventListener("touchend", this.onBoardTouchEnd);
   };
 
   onBoardTouchMove = e => {
@@ -60,7 +80,7 @@ export default class Board extends React.Component {
     const y = e.targetTouches[0].clientY;
     this.pointMoveTo({
       x,
-      y,
+      y
     });
   };
 
@@ -73,7 +93,7 @@ export default class Board extends React.Component {
     const y = e.clientY;
     this.pointMoveTo({
       x,
-      y,
+      y
     });
   };
 
@@ -82,7 +102,7 @@ export default class Board extends React.Component {
     const y = e.clientY;
     this.pointMoveTo({
       x,
-      y,
+      y
     });
     this.removeListeners();
   };
@@ -92,13 +112,13 @@ export default class Board extends React.Component {
   };
 
   removeTouchListeners = () => {
-    window.removeEventListener('touchmove', this.onBoardTouchMove);
-    window.removeEventListener('touchend', this.onBoardTouchEnd);
+    window.removeEventListener("touchmove", this.onBoardTouchMove);
+    window.removeEventListener("touchend", this.onBoardTouchEnd);
   };
 
   removeListeners = () => {
-    window.removeEventListener('mousemove', this.onBoardDrag);
-    window.removeEventListener('mouseup', this.onBoardDragEnd);
+    window.removeEventListener("mousemove", this.onBoardDrag);
+    window.removeEventListener("mouseup", this.onBoardDragEnd);
   };
 
   /**
@@ -106,7 +126,9 @@ export default class Board extends React.Component {
    * @param  {object} pos X Y 全局坐标点
    */
   pointMoveTo = pos => {
-    const rect = ReactDOM.findDOMNode(this).getBoundingClientRect();
+    const rect = (ReactDOM.findDOMNode(
+      this
+    ) as HTMLElement).getBoundingClientRect();
     let left = pos.x - rect.left;
     let top = pos.y - rect.top;
 
@@ -118,7 +140,7 @@ export default class Board extends React.Component {
     top = Math.max(0, top);
     top = Math.min(top, rHeight);
 
-    const {color} = this.props;
+    const { color } = this.props;
 
     color.saturation = left / rWidth;
     color.brightness = 1 - top / rHeight;
@@ -133,7 +155,7 @@ export default class Board extends React.Component {
     const hueHsv = {
       h: color.hue,
       s: 1,
-      v: 1,
+      v: 1
     };
 
     const hueColor = new Color(hueHsv).toHexString();
@@ -143,11 +165,14 @@ export default class Board extends React.Component {
 
     return (
       <div className={prefixCls}>
-        <div className={`${prefixCls}-hsv`} style={{backgroundColor: hueColor}}>
-          <div className={`${prefixCls}-value`}/>
-          <div className={`${prefixCls}-saturation`}/>
+        <div
+          className={`${prefixCls}-hsv`}
+          style={{ backgroundColor: hueColor, }}
+        >
+          <div className={`${prefixCls}-value`} />
+          <div className={`${prefixCls}-saturation`} />
         </div>
-        <span style={{left: `${xRel}%`, top: `${yRel}%`}}/>
+        <span style={{ left: `${xRel}%`, top: `${yRel}%`, }} />
 
         <div
           className={`${prefixCls}-handler`}
