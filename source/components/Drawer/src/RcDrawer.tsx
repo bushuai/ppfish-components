@@ -1,10 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import {polyfill} from 'react-lifecycles-compat';
-
-import {ContainerRender, getScrollBarSize} from '../../../utils';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import PropTypes from "prop-types";
+import classnames from "classnames";
+import { polyfill } from "react-lifecycles-compat";
+import { ContainerRender, getScrollBarSize } from "../../../utils";
 import {
   dataToArray,
   transitionEnd,
@@ -12,44 +11,114 @@ import {
   addEventListener,
   removeEventListener,
   transformArguments,
-  isNumeric,
-} from './utils';
-import './Drawer.less';
+  isNumeric
+} from "./utils";
+import "./Drawer.less";
 
-const IS_REACT_16 = 'createPortal' in ReactDOM;
+type EventType =
+  | React.KeyboardEvent<HTMLDivElement>
+  | React.MouseEvent<HTMLDivElement | HTMLButtonElement>;
 
+export interface RcDrawerProps {
+  wrapperClassName?: string;
+  className?: string;
+  style?: React.CSSProperties;
+  width?: number | string;
+  height?: number | string;
+  defaultOpen?: boolean;
+  firstEnter?: boolean;
+  open?: boolean;
+  prefixCls?: string;
+  placement?: string;
+  level?: string | [string, string];
+  levelMove?: number | [number, number];
+  ease?: string;
+  duration?: string;
+  getContainer?: string | React.ReactNode | (() => React.ReactNode) | boolean;
+  handler?: boolean | React.ReactNode;
+  onChange?: (flag: boolean) => void;
+  onMaskClick?: (e: EventType) => void;
+  onHandleClick?: (e: EventType) => void;
+  onCloseClick?: (e: EventType) => void;
+  showMask?: boolean;
+  maskStyle?: React.CSSProperties;
+  closed?: boolean;
+}
+
+export interface RcDrawerState {
+  open: boolean;
+  prevProps: RcDrawerProps;
+}
+
+const IS_REACT_16 = "createPortal" in ReactDOM;
 const currentDrawer = {};
-const windowIsUndefined = typeof window === 'undefined';
+const windowIsUndefined = typeof window === "undefined";
 
-class Drawer extends React.PureComponent {
+class Drawer extends React.PureComponent<RcDrawerProps, RcDrawerState> {
+  static propTypes = {
+    wrapperClassName: PropTypes.string,
+    className: PropTypes.string,
+    children: PropTypes.node,
+    style: PropTypes.object,
+    width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    defaultOpen: PropTypes.bool,
+    firstEnter: PropTypes.bool,
+    open: PropTypes.bool,
+    prefixCls: PropTypes.string,
+    placement: PropTypes.string,
+    level: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    levelMove: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.func,
+      PropTypes.array
+    ]),
+    ease: PropTypes.string,
+    duration: PropTypes.string,
+    getContainer: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.func,
+      PropTypes.object,
+      PropTypes.bool
+    ]),
+    handler: PropTypes.oneOfType([PropTypes.bool, PropTypes.node]),
+    onChange: PropTypes.func,
+    onMaskClick: PropTypes.func,
+    onHandleClick: PropTypes.func,
+    onCloseClick: PropTypes.func,
+    showMask: PropTypes.bool,
+    maskStyle: PropTypes.object,
+    closed: PropTypes.bool
+  };
+
   static defaultProps = {
-    prefixCls: 'drawer',
-    placement: 'left',
-    getContainer: 'body',
-    level: 'all',
-    duration: '.3s',
-    ease: 'cubic-bezier(0.78, 0.14, 0.15, 0.86)',
+    prefixCls: "drawer",
+    placement: "left",
+    getContainer: "body",
+    level: "all",
+    duration: ".3s",
+    ease: "cubic-bezier(0.78, 0.14, 0.15, 0.86)",
     onChange: () => {},
     onMaskClick: () => {},
     onHandleClick: () => {},
     onCloseClick: () => {},
     handler: (
       <div className="drawer-handle">
-        <i className="drawer-handle-icon"/>
+        <i className="drawer-handle-icon" />
       </div>
     ),
     closed: false,
     firstEnter: false,
     showMask: true,
     maskStyle: {},
-    wrapperClassName: '',
-    className: '',
+    wrapperClassName: "",
+    className: ""
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const {prevProps = {}} = prevState;
+    const { prevProps = {} } = prevState;
     const newState = {
-      prevProps: nextProps,
+      prevProps: nextProps
     };
     if (nextProps.open !== undefined && nextProps.open !== prevProps.open) {
       return {
@@ -61,17 +130,38 @@ class Drawer extends React.PureComponent {
     return newState;
   }
 
-  constructor(props) {
+  private levelDom;
+  private contentDom;
+  private maskDom;
+  private handlerdom;
+  private firstEnter;
+  private timeout;
+  private drawerId;
+  private passive;
+  private isOpenChange;
+  private container;
+  private renderComponent;
+  private removeContainer;
+  private contentWrapper;
+  private parent;
+  private dom;
+  private mousePos;
+  private startPos: { x: number; y: number };
+
+  constructor(props: RcDrawerProps) {
     super(props);
     this.levelDom = [];
     this.contentDom = null;
     this.maskDom = null;
     this.handlerdom = null;
     this.mousePos = null;
-    this.firstEnter = props.firstEnter;// 记录首次进入.
+    this.firstEnter = props.firstEnter; // 记录首次进入.
     this.timeout = null;
-    this.drawerId = Number((Date.now() + Math.random()).toString()
-      .replace('.', Math.round(Math.random() * 9))).toString(16);
+    this.drawerId = Number(
+      (Date.now() + Math.random())
+        .toString()
+        .replace(".", String(Math.round(Math.random() * 9)))
+    ).toString(16);
     const open = props.open !== undefined ? props.open : !!props.defaultOpen;
     currentDrawer[this.drawerId] = open;
     this.state = {
@@ -84,16 +174,16 @@ class Drawer extends React.PureComponent {
     if (!windowIsUndefined) {
       let passiveSupported = false;
       window.addEventListener(
-        'test',
+        "test",
         null,
-        Object.defineProperty({}, 'passive', {
+        Object.defineProperty({}, "passive", {
           get: () => {
             passiveSupported = true;
             return null;
-          },
+          }
         })
       );
-      this.passive = passiveSupported ? {passive: false} : false;
+      this.passive = passiveSupported ? { passive: false } : false;
     }
     const open = this.getOpen();
     if (this.props.handler || open || this.firstEnter) {
@@ -105,7 +195,7 @@ class Drawer extends React.PureComponent {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps: RcDrawerProps) {
     if (this.props.open !== undefined && this.props.open !== prevProps.open) {
       this.isOpenChange = true;
       // 没渲染 dom 时，获取默认数据;
@@ -134,7 +224,7 @@ class Drawer extends React.PureComponent {
       if (this.state.open) {
         this.setLevelDomTransform(false, true);
       }
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
       // 拦不住。。直接删除；
       if (this.props.getContainer) {
         this.container.parentNode.removeChild(this.container);
@@ -147,9 +237,8 @@ class Drawer extends React.PureComponent {
     if (this.renderComponent && !IS_REACT_16) {
       this.renderComponent({
         afterClose: this.removeContainer,
-        onClose() {
-        },
-        visible: false,
+        onClose() {},
+        visible: false
       });
     }
   }
@@ -163,30 +252,31 @@ class Drawer extends React.PureComponent {
     this.props.onHandleClick(e);
     this.onTouchEnd(e);
   };
-  onTouchEnd = (e, close) => {
+
+  onTouchEnd = (e, close?: boolean) => {
     if (this.props.open !== undefined) {
       return;
     }
     const open = close || this.state.open;
     this.isOpenChange = true;
     this.setState({
-      open: !open,
+      open: !open
     });
   };
 
-  handleOnClosed = (e) => {
+  handleOnClosed = e => {
     this.props.onCloseClick(e);
     this.onTouchEnd(e, true);
   };
 
-  onWrapperTransitionEnd = (e) => {
+  onWrapperTransitionEnd = e => {
     if (e.target === this.contentWrapper) {
-      this.dom.style.transition = '';
+      this.dom.style.transition = "";
       if (!this.state.open && this.getCrrentDrawerSome()) {
-        document.body.style.overflowX = '';
+        document.body.style.overflowX = "";
         if (this.maskDom) {
-          this.maskDom.style.left = '';
-          this.maskDom.style.width = '';
+          this.maskDom.style.left = "";
+          this.maskDom.style.width = "";
         }
       }
     }
@@ -199,7 +289,8 @@ class Drawer extends React.PureComponent {
     }
   };
 
-  getCrrentDrawerSome = () => !Object.keys(currentDrawer).some(key => currentDrawer[key]);
+  getCrrentDrawerSome = () =>
+    !Object.keys(currentDrawer).some(key => currentDrawer[key]);
 
   getContainer = () => {
     return this.container;
@@ -208,28 +299,35 @@ class Drawer extends React.PureComponent {
     if (windowIsUndefined) {
       return;
     }
-    const {level, getContainer} = props;
+    const { level, getContainer } = props;
     this.levelDom = [];
     if (getContainer) {
-      if (typeof getContainer === 'string') {
+      if (typeof getContainer === "string") {
         const dom = document.querySelectorAll(getContainer)[0];
         this.parent = dom;
       }
-      if (typeof getContainer === 'function') {
+      if (typeof getContainer === "function") {
         this.parent = getContainer();
       }
-      if (typeof getContainer === 'object' && getContainer instanceof window.HTMLElement) {
+      if (
+        typeof getContainer === "object" &&
+        getContainer instanceof window.HTMLElement
+      ) {
         this.parent = getContainer;
       }
     }
     if (!getContainer && this.container) {
       this.parent = this.container.parentNode;
     }
-    if (level === 'all') {
+    if (level === "all") {
       const children = Array.prototype.slice.call(this.parent.children);
       children.forEach(child => {
-        if (child.nodeName !== 'SCRIPT' && child.nodeName !== 'STYLE'
-          && child.nodeName !== 'LINK' && child !== this.container) {
+        if (
+          child.nodeName !== "SCRIPT" &&
+          child.nodeName !== "STYLE" &&
+          child.nodeName !== "LINK" &&
+          child !== this.container
+        ) {
           this.levelDom.push(child);
         }
       });
@@ -242,8 +340,20 @@ class Drawer extends React.PureComponent {
     }
   };
 
-  setLevelDomTransform = (open, openTransition, placementName, value) => {
-    const {placement, levelMove, duration, ease, onChange, getContainer} = this.props;
+  setLevelDomTransform = (
+    open?: boolean,
+    openTransition?: boolean,
+    placementName?: string,
+    value?: string
+  ) => {
+    const {
+      placement,
+      levelMove,
+      duration,
+      ease,
+      onChange,
+      getContainer
+    } = this.props;
     if (!windowIsUndefined) {
       this.levelDom.forEach(dom => {
         if (this.isOpenChange || openTransition) {
@@ -252,39 +362,56 @@ class Drawer extends React.PureComponent {
           addEventListener(dom, transitionEnd, this.trnasitionEnd);
           let levelValue = open ? value : 0;
           if (levelMove) {
-            const $levelMove = transformArguments(levelMove, {target: dom, open});
+            const $levelMove = transformArguments(levelMove, {
+              target: dom,
+              open
+            });
             levelValue = open ? $levelMove[0] : $levelMove[1] || 0;
           }
-          const $value = typeof levelValue === 'number' ? `${levelValue}px` : levelValue;
-          const placementPos = placement === 'left' || placement === 'top' ? $value : `-${$value}`;
-          dom.style.transform = levelValue ? `${placementName}(${placementPos})` : '';
-          dom.style.msTransform = levelValue ? `${placementName}(${placementPos})` : '';
+          const $value =
+            typeof levelValue === "number" ? `${levelValue}px` : levelValue;
+          const placementPos =
+            placement === "left" || placement === "top" ? $value : `-${$value}`;
+          dom.style.transform = levelValue
+            ? `${placementName}(${placementPos})`
+            : "";
+          dom.style.msTransform = levelValue
+            ? `${placementName}(${placementPos})`
+            : "";
         }
       });
       // 处理 body 滚动
-      if (getContainer === 'body') {
-        const eventArray = ['touchstart'];
-        const domArray = [document.body, this.maskDom, this.handlerdom, this.contentDom];
-        const right = document.body.scrollHeight > (window.innerHeight || document.documentElement.clientHeight) &&
-        window.innerWidth > document.body.offsetWidth
-          ? getScrollBarSize(1) : 0;
+      if (getContainer === "body") {
+        const eventArray = ["touchstart"];
+        const domArray = [
+          document.body,
+          this.maskDom,
+          this.handlerdom,
+          this.contentDom
+        ];
+        const right =
+          document.body.scrollHeight >
+            (window.innerHeight || document.documentElement.clientHeight) &&
+          window.innerWidth > document.body.offsetWidth
+            ? getScrollBarSize(1)
+            : 0;
         let widthTransition = `width ${duration} ${ease}`;
         const trannsformTransition = `transform ${duration} ${ease}`;
-        if (open && document.body.style.overflow !== 'hidden') {
-          document.body.style.overflow = 'hidden';
+        if (open && document.body.style.overflow !== "hidden") {
+          document.body.style.overflow = "hidden";
           if (right) {
-            document.body.style.position = 'relative';
+            document.body.style.position = "relative";
             document.body.style.width = `calc(100% - ${right}px)`;
-            this.dom.style.transition = 'none';
+            this.dom.style.transition = "none";
             switch (placement) {
-              case 'right':
+              case "right":
                 this.dom.style.transform = `translateX(-${right}px)`;
                 this.dom.style.msTransform = `translateX(-${right}px)`;
                 break;
-              case 'top':
-              case 'bottom':
+              case "top":
+              case "bottom":
                 this.dom.style.width = `calc(100% - ${right}px)`;
-                this.dom.style.transform = 'translateZ(0)';
+                this.dom.style.transform = "translateZ(0)";
                 break;
               default:
                 break;
@@ -292,9 +419,9 @@ class Drawer extends React.PureComponent {
             clearTimeout(this.timeout);
             this.timeout = setTimeout(() => {
               this.dom.style.transition = `${trannsformTransition},${widthTransition}`;
-              this.dom.style.width = '';
-              this.dom.style.transform = '';
-              this.dom.style.msTransform = '';
+              this.dom.style.width = "";
+              this.dom.style.transform = "";
+              this.dom.style.msTransform = "";
             });
           }
           // 手机禁滚
@@ -304,26 +431,26 @@ class Drawer extends React.PureComponent {
             }
             addEventListener(
               item,
-              eventArray[i] || 'touchmove',
+              eventArray[i] || "touchmove",
               i ? this.removeMoveHandler : this.removeStartHandler,
               this.passive
             );
           });
         } else if (this.getCrrentDrawerSome()) {
-          document.body.style.overflow = '';
+          document.body.style.overflow = "";
           if ((this.isOpenChange || openTransition) && right) {
-            document.body.style.position = '';
-            document.body.style.width = '';
+            document.body.style.position = "";
+            document.body.style.width = "";
             if (trnasitionStr) {
-              document.body.style.overflowX = 'hidden';
+              document.body.style.overflowX = "hidden";
             }
-            this.dom.style.transition = 'none';
+            this.dom.style.transition = "none";
             let heightTransition;
             switch (placement) {
-              case 'right': {
+              case "right": {
                 this.dom.style.transform = `translateX(${right}px)`;
                 this.dom.style.msTransform = `translateX(${right}px)`;
-                this.dom.style.width = '100%';
+                this.dom.style.width = "100%";
                 widthTransition = `width 0s ${ease} ${duration}`;
                 if (this.maskDom) {
                   this.maskDom.style.left = `-${right}px`;
@@ -331,11 +458,11 @@ class Drawer extends React.PureComponent {
                 }
                 break;
               }
-              case 'top':
-              case 'bottom': {
+              case "top":
+              case "bottom": {
                 this.dom.style.width = `calc(100% + ${right}px)`;
-                this.dom.style.height = '100%';
-                this.dom.style.transform = 'translateZ(0)';
+                this.dom.style.height = "100%";
+                this.dom.style.transform = "translateZ(0)";
                 heightTransition = `height 0s ${ease} ${duration}`;
                 break;
               }
@@ -345,11 +472,12 @@ class Drawer extends React.PureComponent {
             clearTimeout(this.timeout);
             this.timeout = setTimeout(() => {
               this.dom.style.transition = `${trannsformTransition},${
-                heightTransition ? `${heightTransition},` : ''}${widthTransition}`;
-              this.dom.style.transform = '';
-              this.dom.style.msTransform = '';
-              this.dom.style.width = '';
-              this.dom.style.height = '';
+                heightTransition ? `${heightTransition},` : ""
+              }${widthTransition}`;
+              this.dom.style.transform = "";
+              this.dom.style.msTransform = "";
+              this.dom.style.width = "";
+              this.dom.style.height = "";
             });
           }
           domArray.forEach((item, i) => {
@@ -358,7 +486,7 @@ class Drawer extends React.PureComponent {
             }
             removeEventListener(
               item,
-              eventArray[i] || 'touchmove',
+              eventArray[i] || "touchmove",
               i ? this.removeMoveHandler : this.removeStartHandler,
               this.passive
             );
@@ -389,50 +517,57 @@ class Drawer extends React.PureComponent {
     const wrapperClassname = classnames(prefixCls, {
       [`${prefixCls}-${placement}`]: true,
       [`${prefixCls}-open`]: open,
-      [className]: !!className,
+      [className]: !!className
     });
     const isOpenChange = this.isOpenChange;
-    const isHorizontal = placement === 'left' || placement === 'right';
-    const placementName = `translate${isHorizontal ? 'X' : 'Y'}`;
+    const isHorizontal = placement === "left" || placement === "right";
+    const placementName = `translate${isHorizontal ? "X" : "Y"}`;
     // 百分比与像素动画不同步，第一次打用后全用像素动画。
     // const defaultValue = !this.contentDom || !level ? '100%' : `${value}px`;
     const placementPos =
-      placement === 'left' || placement === 'top' ? '-100%' : '100%';
-    const transform = open ? '' : `${placementName}(${placementPos})`;
+      placement === "left" || placement === "top" ? "-100%" : "100%";
+    const transform = open ? "" : `${placementName}(${placementPos})`;
     if (isOpenChange === undefined || isOpenChange) {
-      const contentValue = this.contentDom ? this.contentDom.getBoundingClientRect()[
-        isHorizontal ? 'width' : 'height'
-        ] : 0;
+      const contentValue = this.contentDom
+        ? this.contentDom.getBoundingClientRect()[
+            isHorizontal ? "width" : "height"
+          ]
+        : 0;
       const value = (isHorizontal ? width : height) || contentValue;
       this.setLevelDomTransform(open, false, placementName, value);
     }
-    const handlerCildren = handler && React.cloneElement(handler, {
-      onClick: (e) => {
-        if (handler.props.onClick) {
-          handler.props.onClick();
+    const handlerCildren =
+      handler &&
+      React.cloneElement(handler as React.ReactElement<any>, {
+        onClick: e => {
+          if ((handler as React.ReactElement<any>).props.onClick) {
+            (handler as React.ReactElement<any>).props.onClick();
+          }
+          this.onIconTouchEnd(e);
+        },
+        ref: c => {
+          this.handlerdom = c;
         }
-        this.onIconTouchEnd(e);
-      },
-      ref: (c) => {
-        this.handlerdom = c;
-      }
-    });
+      });
     const closedElement = () => {
       return (
         <div className="drawer-close">
-          <i className="drawer-close-icon"/>
+          <i className="drawer-close-icon" />
         </div>
       );
     };
-    const closedChildren = closed && this.state.open && React.cloneElement(closedElement(), {
-      onClick: (e) => {
-        this.handleOnClosed(e);
-      }
-    });
+    const closedChildren =
+      closed &&
+      this.state.open &&
+      React.cloneElement(closedElement(), {
+        onClick: e => {
+          this.handleOnClosed(e);
+        }
+      });
     // 当没有遮罩时，抽屉下面的内容需要可点击
     const noMaskWidth = () => {
       if (!showMask && open) {
-        return {width: "0%"};
+        return { width: "0%" };
       }
       return {};
     };
@@ -461,7 +596,7 @@ class Drawer extends React.PureComponent {
             transform,
             msTransform: transform,
             width: isNumeric(width) ? `${width}px` : width,
-            height: isNumeric(height) ? `${height}px` : height,
+            height: isNumeric(height) ? `${height}px` : height
           }}
           ref={c => {
             this.contentWrapper = c;
@@ -484,9 +619,8 @@ class Drawer extends React.PureComponent {
     );
   };
 
-  getOpen = () => (
-    this.props.open !== undefined ? this.props.open : this.state.open
-  );
+  getOpen = () =>
+    this.props.open !== undefined ? this.props.open : this.state.open;
 
   getTouchParentScroll = (root, currentTarget, differX, differY) => {
     /**
@@ -498,19 +632,30 @@ class Drawer extends React.PureComponent {
     if (!currentTarget) {
       return false;
     } else if (
-      (((currentTarget.scrollTop + currentTarget.offsetHeight + currentTarget.offsetTop
-        >= currentTarget.scrollHeight + rect.top &&
+      (((currentTarget.scrollTop +
+        currentTarget.offsetHeight +
+        currentTarget.offsetTop >=
+        currentTarget.scrollHeight + rect.top &&
         differY < 0) ||
         (currentTarget.scrollTop <= 0 && differY > 0)) &&
         Math.max(Math.abs(differX), Math.abs(differY)) === Math.abs(differY)) ||
-      (((currentTarget.scrollLeft + currentTarget.offsetWidth + currentTarget.offsetLeft
-        >= currentTarget.scrollWidth + rect.left &&
+      (((currentTarget.scrollLeft +
+        currentTarget.offsetWidth +
+        currentTarget.offsetLeft >=
+        currentTarget.scrollWidth + rect.left &&
         differX < 0) ||
         (currentTarget.scrollLeft <= 0 && differX > 0)) &&
         Math.max(Math.abs(differX), Math.abs(differY)) === Math.abs(differX))
     ) {
-      return root === currentTarget ||
-        this.getTouchParentScroll(root, currentTarget.parentNode, differX, differY);
+      return (
+        root === currentTarget ||
+        this.getTouchParentScroll(
+          root,
+          currentTarget.parentNode,
+          differX,
+          differY
+        )
+      );
     }
     return false;
   };
@@ -521,7 +666,7 @@ class Drawer extends React.PureComponent {
     }
     this.startPos = {
       x: e.touches[0].clientX,
-      y: e.touches[0].clientY,
+      y: e.touches[0].clientY
     };
   };
 
@@ -535,8 +680,8 @@ class Drawer extends React.PureComponent {
     if (
       currentTarget === this.maskDom ||
       currentTarget === this.handlerdom ||
-      currentTarget === this.contentDom &&
-      this.getTouchParentScroll(currentTarget, e.target, differX, differY)
+      (currentTarget === this.contentDom &&
+        this.getTouchParentScroll(currentTarget, e.target, differX, differY))
     ) {
       e.preventDefault();
     }
@@ -544,14 +689,14 @@ class Drawer extends React.PureComponent {
 
   trnasitionEnd = e => {
     removeEventListener(e.target, transitionEnd, this.trnasitionEnd);
-    e.target.style.transition = '';
+    e.target.style.transition = "";
   };
 
   defaultGetContainer = () => {
     if (windowIsUndefined) {
       return null;
     }
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     this.parent.appendChild(container);
     if (this.props.wrapperClassName) {
       container.className = this.props.wrapperClassName;
@@ -560,7 +705,7 @@ class Drawer extends React.PureComponent {
   };
 
   render() {
-    const {getContainer, wrapperClassName} = this.props;
+    const { getContainer, wrapperClassName } = this.props;
     const open = this.getOpen();
     currentDrawer[this.drawerId] = open ? this.container : open;
     const children = this.getChildToRender(this.firstEnter ? open : false);
@@ -576,7 +721,7 @@ class Drawer extends React.PureComponent {
         </div>
       );
     }
-    if (!this.container || !open && !this.firstEnter) {
+    if (!this.container || (!open && !this.firstEnter)) {
       return null;
     }
     // suppport react15
@@ -590,7 +735,7 @@ class Drawer extends React.PureComponent {
           getComponent={() => children}
           getContainer={this.getContainer}
         >
-          {({renderComponent, removeContainer}) => {
+          {({ renderComponent, removeContainer }) => {
             this.renderComponent = renderComponent;
             this.removeContainer = removeContainer;
             return null;
@@ -601,33 +746,6 @@ class Drawer extends React.PureComponent {
     return ReactDOM.createPortal(children, this.container);
   }
 }
-
-Drawer.propTypes = {
-  wrapperClassName: PropTypes.string,
-  className: PropTypes.string,
-  children: PropTypes.node,
-  style: PropTypes.object,
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  defaultOpen: PropTypes.bool,
-  firstEnter: PropTypes.bool,
-  open: PropTypes.bool,
-  prefixCls: PropTypes.string,
-  placement: PropTypes.string,
-  level: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  levelMove: PropTypes.oneOfType([PropTypes.number, PropTypes.func, PropTypes.array]),
-  ease: PropTypes.string,
-  duration: PropTypes.string,
-  getContainer: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.object, PropTypes.bool]),
-  handler: PropTypes.oneOfType([PropTypes.bool, PropTypes.node]),
-  onChange: PropTypes.func,
-  onMaskClick: PropTypes.func,
-  onHandleClick: PropTypes.func,
-  onCloseClick: PropTypes.func,
-  showMask: PropTypes.bool,
-  maskStyle: PropTypes.object,
-  closed: PropTypes.bool
-};
 
 polyfill(Drawer);
 

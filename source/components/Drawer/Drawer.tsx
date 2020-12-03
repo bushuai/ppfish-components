@@ -1,8 +1,17 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import RcDrawer from './src';
+import * as React from "react";
+import * as PropTypes from "prop-types";
+import RcDrawer from "./src";
+import { RcDrawerProps, RcDrawerState } from "./src/RcDrawer";
 
-export default class Drawer extends React.Component {
+interface DrawerProps {
+  visible: boolean;
+  mask: boolean;
+}
+
+export default class Drawer extends React.Component<
+  RcDrawerProps & DrawerProps,
+  RcDrawerState
+> {
   static propTypes = {
     prefixCls: PropTypes.string,
     className: PropTypes.string,
@@ -11,12 +20,12 @@ export default class Drawer extends React.Component {
     height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     visible: PropTypes.bool,
     closed: PropTypes.bool,
-    placement: PropTypes.oneOf(['left', 'right', 'bottom', 'top']),
+    placement: PropTypes.oneOf(["left", "right", "bottom", "top"]),
     getContainer: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.object,
       PropTypes.func,
-      PropTypes.bool,
+      PropTypes.bool
     ]),
     style: PropTypes.object,
     mask: PropTypes.bool,
@@ -33,31 +42,15 @@ export default class Drawer extends React.Component {
   };
 
   static defaultProps = {
-    prefixCls: 'fishd-drawer',
-    placement: 'right',
-    onChange: () => { },
-    onMaskClick: () => { },
-    onHandleClick: () => { },
+    prefixCls: "fishd-drawer",
+    placement: "right",
+    onChange: () => {},
+    onMaskClick: () => {},
+    onHandleClick: () => {}
   };
 
-  constructor(props) {
+  constructor(props: DrawerProps) {
     super(props);
-  }
-
-  handleMaskClick = (e) => {
-    this.props.onMaskClick(e);
-  }
-
-  handleChange = (status) => {
-    this.props.onChange(status);
-  }
-
-  handleHandleClick = (e) => {
-    this.props.onHandleClick(e);
-  }
-
-  handleCloseClick = (e) => {
-    this.props.onCloseClick(e);
   }
 
   render() {
@@ -76,7 +69,11 @@ export default class Drawer extends React.Component {
       level,
       ease,
       duration,
-      closed
+      closed,
+      onMaskClick,
+      onChange,
+      onHandleClick,
+      onCloseClick
     } = this.props;
 
     return (
@@ -96,10 +93,10 @@ export default class Drawer extends React.Component {
         maskStyle={maskStyle}
         style={style}
         handler={handler}
-        onMaskClick={this.handleMaskClick}
-        onHandleClick={this.handleHandleClick}
-        onChange={this.handleChange}
-        onCloseClick={this.handleCloseClick}
+        onMaskClick={onMaskClick}
+        onHandleClick={onHandleClick}
+        onChange={onChange}
+        onCloseClick={onCloseClick}
       >
         {this.props.children}
       </RcDrawer>
