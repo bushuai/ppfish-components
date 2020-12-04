@@ -28,6 +28,53 @@ const clearHours = function (time) {
 const WEEKS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 export default class DateTable extends React.Component {
+  static propTypes = {
+    disabledDate: PropTypes.func,
+    showWeekNumber: PropTypes.bool,
+    //minDate, maxDate: only valid in range mode. control date's start, end info
+    minDate: PropTypes.instanceOf(Date),
+    maxDate: PropTypes.instanceOf(Date),
+    mode: PropTypes.oneOf(Object.keys(SELECTION_MODES).map(e => SELECTION_MODES[e])),
+    // date view model, all visual view derive from this info
+    date: PropTypes.instanceOf(Date).isRequired,
+    // current date value, use picked.
+    value: PropTypes.instanceOf(Date),
+    /*
+    (data, closePannel: boolean)=>()
+      data:
+        if mode = range: // notify when ranges is change
+          minDate: Date|null,
+          maxDate: Date|null
+        if mode = date
+          date: Date
+        if mode = week:
+          year: number
+          week: number,
+          value: string,
+          date: Date
+    */
+    onPick: PropTypes.func.isRequired,
+
+    /*
+    ({
+      endDate: Date,
+      selecting: boolean,
+    })=>()
+    */
+    onChangeRange: PropTypes.func,
+    rangeState: PropTypes.shape({
+      endDate: PropTypes.date,
+      selecting: PropTypes.bool,
+    }),
+    firstDayOfWeek: PropTypes.number,
+    prefixCls: PropTypes.string
+  }
+
+  defaultProps = {
+    mode: 'day',
+    firstDayOfWeek: 0,
+    prefixCls: 'fishd'
+  };
 
   constructor(props) {
     super(props);
@@ -403,51 +450,3 @@ export default class DateTable extends React.Component {
     );
   }
 }
-
-DateTable.propTypes = {
-  disabledDate: PropTypes.func,
-  showWeekNumber: PropTypes.bool,
-  //minDate, maxDate: only valid in range mode. control date's start, end info
-  minDate: PropTypes.instanceOf(Date),
-  maxDate: PropTypes.instanceOf(Date),
-  mode: PropTypes.oneOf(Object.keys(SELECTION_MODES).map(e => SELECTION_MODES[e])),
-  // date view model, all visual view derive from this info
-  date: PropTypes.instanceOf(Date).isRequired,
-  // current date value, use picked.
-  value: PropTypes.instanceOf(Date),
-  /*
-  (data, closePannel: boolean)=>()
-    data:
-      if mode = range: // notify when ranges is change
-        minDate: Date|null,
-        maxDate: Date|null
-      if mode = date
-        date: Date
-      if mode = week:
-        year: number
-        week: number,
-        value: string,
-        date: Date
-  */
-  onPick: PropTypes.func.isRequired,
-
-  /*
-  ({
-    endDate: Date,
-    selecting: boolean,
-  })=>()
-  */
-  onChangeRange: PropTypes.func,
-  rangeState: PropTypes.shape({
-    endDate: PropTypes.date,
-    selecting: PropTypes.bool,
-  }),
-  firstDayOfWeek: PropTypes.number,
-  prefixCls: PropTypes.string
-};
-
-DateTable.defaultProps = {
-  mode: 'day',
-  firstDayOfWeek: 0,
-  prefixCls: 'fishd'
-};

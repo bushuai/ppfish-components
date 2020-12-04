@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Input from '../Input/index.tsx';
@@ -7,25 +7,28 @@ import Trigger from 'rc-trigger';
 import {HAVE_TRIGGER_TYPES, TYPE_VALUE_RESOLVER_MAP, DEFAULT_FORMATS} from './constants';
 import {Errors, require_condition} from './libs/utils';
 import KEYCODE from '../../utils/KeyCode';
-import {isValidValue, equalDate} from '../../utils/date';
+import {isValidValue, isValidValueArr, equalDateArr} from '../../utils/date';
 import placements from './placements';
 import isEqual from 'lodash/isEqual';
 
 const haveTriggerType = (type) => {
   return HAVE_TRIGGER_TYPES.indexOf(type) !== -1;
 };
+
 const isInputValid = (text, date) => {
   if (text.trim() === '' || !isValidValue(date)) return false;
   return true;
 };
 
 const $type = Symbol('type');
-class BasePicker extends React.Component {
+class DateRangeBasePicker extends React.Component {
 
   static get propTypes() {
     return {
       className: PropTypes.string,
-      placeholder: PropTypes.string,
+      startPlaceholder: PropTypes.string,
+      endPlaceholder: PropTypes.string,
+      separator: PropTypes.string,
       format: PropTypes.string,
       placement: PropTypes.oneOf(['bottomLeft', 'bottomCenter', 'bottomRight', 'topLeft', 'topCenter', 'topRight']),
       prefixCls: PropTypes.string,
@@ -34,7 +37,7 @@ class BasePicker extends React.Component {
       allowClear: PropTypes.bool,
       disabled: PropTypes.bool,
       esc: PropTypes.bool,
-      value: PropTypes.instanceOf(Date),
+      value: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
       onFocus: PropTypes.func,
       onBlur: PropTypes.func,
       onChange: PropTypes.func,
@@ -45,7 +48,9 @@ class BasePicker extends React.Component {
 
   static get defaultProps() {
     return {
-      placeholder: '',
+      startPlaceholder: '开始日期',
+      endPlaceholder: '结束日期',
+      separator: '至',
       placement: 'bottomLeft',
       prefixCls: 'fishd',
       showTrigger: true,
@@ -59,63 +64,63 @@ class BasePicker extends React.Component {
     };
   }
 
+  static dateToStr(date, type, format, separator) {
+    if (!date || !isValidValue(date)) return '';
+    const tdate = date;
+    const formatter = (
+      TYPE_VALUE_RESOLVER_MAP['date']
+    ).formatter;
+    const result = formatter(tdate, format || DEFAULT_FORMATS[type], separator);
+    return result;
+  }
+
+
+  static propToState({ value,format,separator },state) {
+
+    const type = state[$type];
+    return {
+      value: value && isValidValueArr(value) ? value : null,
+      text:
+        value && isValidValueArr(value)
+          ? [
+            DateRangeBasePicker.dateToStr(value[0], type, format, separator),
+            DateRangeBasePicker.dateToStr(value[1], type, format, separator)
+          ]
+          : "",
+      confirmValue: value && isValidValueArr(value) ? value : null
+    };
+  }
+
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (
-      "value" in nextProps &&
-      !isEqual(nextProps.value, prevState.prevPropValue)
-    ) {
-      const validDate = isValidValue(nextProps.value)
-        ? nextProps.value
-        : null;
-      const text = isValidValue(nextProps.value)
-        ? BasePicker.dateToStr(
-            nextProps.value,
-            prevState[$type],
-            nextProps.format,
-            nextProps.separator,// 这个值当前使用的是undefined
-          )
-        : "";
-      let state = {
-        value: validDate,
-        text: text,
-        // 增加一个confirmValue记录每次确定的值，当点击"取消"或者输入不合法时，恢复这个值
-        confirmValue: validDate
-      };
+    // 只 value 受控
+    if ('value' in nextProps && !isEqual(prevState.prevPropValue, nextProps.value)) {
+      let state = DateRangeBasePicker.propToState(nextProps, prevState);
       state.prevPropValue = nextProps.value;
       return state;
     }
     return null;
   }
 
-  static dateToStr(date, type, format, separator) {
-    if (!date || !isValidValue(date)) return '';
-    const tdate = date;
-    const formatter = (
-      TYPE_VALUE_RESOLVER_MAP[type] ||
-      TYPE_VALUE_RESOLVER_MAP['default']
-    ).formatter;
-    const result = formatter(tdate, format || DEFAULT_FORMATS[type], separator);
-    return result;
-  }
-
-  constructor(props, _type,  state) {
+  constructor(props, _type, state) {
     require_condition(typeof _type === 'string');
     super(props);
 
     this.type = _type;
     this.inputClick = false;
-
     this.state = {
-      [$type]: _type,
       pickerVisible: false,
-      value: null,
-      text: "",
-      confirmValue: null
+      value: props.value && isValidValueArr(props.value) ? props.value : null,
+      text: (
+        props.value && isValidValueArr(props.value) ?
+        [this.dateToStr(props.value[0]), this.dateToStr(props.value[1])] : ''
+      ),
+      // 增加一个confirmValue记录每次确定的值，当点击"取消"或者空白处时，恢复这个值
+      confirmValue: props.value && isValidValueArr(props.value) ? props.value : null
     };
   }
 
   isDateValid(date) {
-    return date === null || isValidValue(date);
+    return date === null || isValidValueArr(date);
   }
 
   pickerPanel(state, props) {
@@ -126,11 +131,20 @@ class BasePicker extends React.Component {
     return undefined;
   }
 
+  onError() {
+    return undefined;
+  }
+
   onPicked = (value, isKeepPannel = false, isConfirmValue = true) => {
+    // 当为日期范围选择面板时，把结束时间默认设置为23:59:59:999
+    if(this.type == 'daterange' && value && value.length === 2) {
+      value[1] = new Date(value[1].setHours(23,59,59,999));
+    }
+
     this.setState({
       pickerVisible: isKeepPannel,
       value,
-      text: this.dateToStr(value),
+      text: value && value.length === 2 ? [this.dateToStr(value[0]), this.dateToStr(value[1])] : '',
     }, ()=> {
       this.props.onVisibleChange(isKeepPannel);
     });
@@ -144,34 +158,33 @@ class BasePicker extends React.Component {
   }
 
   onCancelPicked = () => {
-    const { confirmValue } = this.state;
-
     this.setState({
       pickerVisible: false,
-      value: confirmValue ? confirmValue : null,
-      text: confirmValue ? this.dateToStr(confirmValue) : ''
+      value: this.state.confirmValue && this.state.confirmValue.length === 2 ? this.state.confirmValue : null,
+      text: (
+        this.state.confirmValue && this.state.confirmValue.length === 2 ?
+        [this.dateToStr(new Date(this.state.confirmValue[0])), this.dateToStr(new Date(this.state.confirmValue[1]))] : ''
+      )
     }, ()=> {
       this.props.onVisibleChange(false);
     });
   }
 
-  dateToStr(date) {
-    return BasePicker.dateToStr(date, this.type, this.props.format, this.getFormatSeparator());
+  getFormat() {
+    return this.props.format || DEFAULT_FORMATS[this.type];
   }
 
-  // (string) => Date | null
-  parseDate(dateStr) {
+  dateToStr = (date) => {
+    return DateRangeBasePicker.dateToStr(date, this.type, this.getFormat(), this.getFormatSeparator());
+  }
+
+  parseDate = (dateStr) => {
     if (!dateStr) return null;
     const type = this.type;
     const parser = (
-      TYPE_VALUE_RESOLVER_MAP[type] ||
-      TYPE_VALUE_RESOLVER_MAP['default']
+      TYPE_VALUE_RESOLVER_MAP['date']
     ).parser;
     return parser(dateStr, this.getFormat(), this.getFormatSeparator());
-  }
-
-  getFormat() {
-    return this.props.format || DEFAULT_FORMATS[this.type];
   }
 
   togglePickerVisible() {
@@ -226,17 +239,15 @@ class BasePicker extends React.Component {
     if (!text) {
       this.togglePickerVisible();
     } else {
-      this.setState(
-        {
+      this.setState({
           text: '',
           value: null,
           pickerVisible: false,
           confirmValue: null
-        }, () => {
-          this.props.onVisibleChange(false);
-          this.props.onChange(null);
-        }
-      );
+      },()=> {
+        this.props.onVisibleChange(false);
+        this.props.onChange(null);
+      });
     }
   }
 
@@ -263,7 +274,17 @@ class BasePicker extends React.Component {
   saveValidInputValue = () => {
     const {value, confirmValue} = this.state;
 
-    if (this.isDateValid(value) && !equalDate(value, confirmValue)) {
+    if(value && value.length === 2 && this.onError) {
+      const error = this.onError([value[0], value[1]]);
+      if(error) {
+        this.setState({
+          pickerVisible: error,
+        });
+        return;
+      }
+    }
+
+    if (this.isDateValid(value) && !equalDateArr(value, confirmValue)) {
       this.onPicked(value, false, true);
     }else{
       this.onCancelPicked();
@@ -272,28 +293,30 @@ class BasePicker extends React.Component {
 
   render() {
     const {
-      className,
-      placeholder,
-      placement,
-      prefixCls,
-      getPopupContainer,
+      startPlaceholder,
+      endPlaceholder,
+      separator,
       showTrigger,
       allowClear,
       disabled,
+      className,
+      placement,
+      prefixCls,
+      getPopupContainer,
       style
     } = this.props;
     const {pickerVisible, value, text} = this.state;
 
-    const triggerClass = () => {
-      return this.type.includes('date') || this.type.includes('week') ? 'date-line' : 'time-line';
-    };
-
     const calcIsShowTrigger = () => {
-      if (showTrigger != null) {
+      if (showTrigger !== null) {
         return !!showTrigger;
       } else {
         return haveTriggerType(this.type);
       }
+    };
+
+    const triggerClass = () => {
+      return this.type.includes('date') || this.type.includes('week') ? 'date-line' : 'time-line';
     };
 
     // 前缀图标
@@ -334,16 +357,12 @@ class BasePicker extends React.Component {
     const getInputPanel = () => {
       return (
         <span
-          className={classNames(
-            `${prefixCls}-date-editor`,
-            className,
-            {
-              'is-have-trigger': calcIsShowTrigger(),
-              'is-active': pickerVisible,
-              'is-filled': !!value,
-              'is-disable': disabled
-            }
-          )}
+          className={classNames(`${prefixCls}-date-editor`, className, {
+            'is-have-trigger': calcIsShowTrigger(),
+            'is-active': pickerVisible,
+            'is-filled': !!value,
+            'is-disable': disabled
+          })}
           style={{...style}}
           onClick={() => this.inputClick = true}
         >
@@ -354,7 +373,7 @@ class BasePicker extends React.Component {
             <Input
               disabled={disabled}
               type="text"
-              placeholder={placeholder}
+              placeholder={startPlaceholder}
               onFocus={this.handleFocus}
               onBlur={this.handleBlur}
               onKeyDown={this.handleKeydown}
@@ -363,20 +382,47 @@ class BasePicker extends React.Component {
                 const ndate = this.parseDate(inputValue);
                 if (!isInputValid(inputValue, ndate)) {
                   this.setState({
-                    text: inputValue,
+                    text: [inputValue, this.state.text[1]],
                     pickerVisible: true
                   });
                 } else {//only set value on a valid date input
                   this.setState({
-                    text: inputValue,
-                    value: ndate,
+                    text: [inputValue, this.state.text[1]],
+                    value: [ndate, this.state.value[1]],
                     pickerVisible: true
                   });
                 }
               }}
-              ref={e=> this.refInputRoot = e}
-              value={text}
+              ref={e => this.refInputRoot = e}
+              value={text && text.length == 2 ? text[0] : ''}
               prefix={prefixIcon()}
+            />
+            <span className={classNames("range-separator", {'disabled': disabled})}>{separator}</span>
+            <Input
+              className={`${prefixCls}-date-range-picker-second-input`}
+              disabled={disabled}
+              type="text"
+              placeholder={endPlaceholder}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              onKeyDown={this.handleKeydown}
+              onChange={e => {
+                const inputValue = e.target.value;
+                const ndate = this.parseDate(inputValue);
+                if (!isInputValid(inputValue, ndate)) {
+                  this.setState({
+                    text: [this.state.text[0], inputValue],
+                    pickerVisible: true
+                  });
+                } else {//only set value on a valid date input
+                  this.setState({
+                    text: [this.state.text[0], inputValue],
+                    value: [this.state.value[0], ndate],
+                    pickerVisible: true
+                  });
+                }
+              }}
+              value={text && text.length == 2 ? text[1] : ''}
               suffix={suffixIcon()}
             />
           </div>
@@ -403,4 +449,4 @@ class BasePicker extends React.Component {
   }
 }
 
-export default BasePicker;
+export default DateRangeBasePicker;

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { DateTable } from '../basic';
-import Input from '../../Input/index.tsx';
-import Icon from '../../Icon/index.tsx';
-import Button from '../../Button/index.tsx';
+import { DateTable } from '../basic/index.ts';
+import Input from '../../Input';
+import Icon from '../../Icon';
+import Button from '../../Button';
 import TimePicker  from '../../TimePicker/index.js';
 import { converSelectRange } from '../TimePicker.js';
 import TimePanel from './TimePanel.js';

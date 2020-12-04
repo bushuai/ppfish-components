@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BasePicker from './BasePicker.js';
 import DatePanel from './panel/DatePanel.js';
@@ -6,8 +6,10 @@ import TimeSelectPanel from './panel/TimeSelectPanel.js';
 import TimePanel from './panel/TimePanel';
 import { converSelectRange } from './TimePicker';
 import { SELECTION_MODES } from '../../utils/date';
+import DateRangePicker from './DateRangePicker';
 
 export default class DatePicker extends BasePicker {
+  DateRangePicker = DateRangePicker
 
   static get propTypes() {
     return Object.assign({}, {

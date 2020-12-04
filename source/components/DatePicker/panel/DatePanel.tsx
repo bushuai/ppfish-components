@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Input from '../../Input/index.tsx';
-import Icon from '../../Icon/index.tsx';
-import Button from '../../Button/index.tsx';
-import TimePicker  from '../../TimePicker/index.js';
-import YearAndMonthPopover from './YearAndMonthPopover.js';
+import Input from '../../Input';
+import Icon from '../../Icon';
+import Button from '../../Button';
+import TimePicker  from '../../TimePicker';
+import YearAndMonthPopover from './YearAndMonthPopover';
 import { DateTable } from '../basic';
 import isEqual from 'lodash/isEqual';
 import {
