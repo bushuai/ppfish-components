@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import PropTypes from 'prop-types';
-import Input from '../Input/index.tsx';
-import Icon from '../Icon/index.tsx';
+import Input from '../Input';
+import Icon from '../Icon';
 
-export default class SelectSearch extends React.Component {
+interface SelectSearchProps {
+  allowClear: boolean
+  emitEmpty: (event: React.MouseEvent<any>) => void
+  prefixCls: string
+  searchInputProps: object
+  searchPlaceholder: string
+  searchValue: string
+  updateSearchValue: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
+export default class SelectSearch extends React.Component<SelectSearchProps> {
   static propTypes = {
     allowClear: PropTypes.bool,
     emitEmpty: PropTypes.func,
@@ -14,7 +24,9 @@ export default class SelectSearch extends React.Component {
     updateSearchValue: PropTypes.func,
   };
 
-  constructor(props) {
+  searchInput: Input
+
+  constructor(props: SelectSearchProps) {
     super(props);
   }
 

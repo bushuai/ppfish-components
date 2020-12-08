@@ -1,8 +1,20 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-export default class Option extends React.Component {
+interface OptionProps {
+  activeKey: string | number
+  checked: boolean | (() => void)
+  children: React.ReactNode | React.ReactChildren
+  disabled: boolean
+  onOptionClick: (e: React.MouseEvent<any>, option: any) => void
+  prefixCls: string
+  showOptionCheckedIcon: boolean
+  title: string
+  value: string | number | React.ReactNode
+}
+
+export default class Option extends React.Component<OptionProps> {
   static isSelectOption = true;
 
   static propTypes = {
@@ -22,11 +34,11 @@ export default class Option extends React.Component {
     showOptionCheckedIcon: true,
   };
 
-  constructor(props) {
+  constructor(props: OptionProps) {
     super(props);
   }
 
-  onOptionClick = (e, option) => {
+  onOptionClick = (e: React.MouseEvent<any>, option) => {
     const {disabled, onOptionClick} = this.props;
     if (!disabled) {
       onOptionClick && onOptionClick(e, option);
@@ -35,7 +47,7 @@ export default class Option extends React.Component {
 
   render() {
     const {title, children, activeKey, showOptionCheckedIcon, value, disabled, checked, prefixCls} = this.props;
-    const label = children && children.length === 1 ? children[0] : children;
+    const label = children && (children as React.ReactNode[]).length === 1 ? children[0] : children;
     const optionCls =
       classNames(
         {[`${prefixCls}-item`]: true},
