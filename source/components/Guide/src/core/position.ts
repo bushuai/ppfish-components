@@ -3,6 +3,11 @@
  * when manipulating positions across the application
  */
 export default class Position {
+  private left: number
+  private top: number
+  private right: number
+  private bottom: number
+
   /**
    * @param {number} left
    * @param {number} top

@@ -6,12 +6,39 @@ import {
 } from '../common/constants';
 import { getStyleProperty } from '../common/utils';
 import Position from './position';
+import { PopoverOptions } from './popover'
+
+export type ElementOptions = {
+  scrollIntoViewOptions?: any
+  onDeselected?: (param: any) => void
+  onHighlightStarted?: (param: any) => void
+  onHighlighted?: (param: any) => void
+  animate?: any
+} & PopoverOptions
+
+interface ElementProps {
+  node: Element & HTMLElement & Node
+  options: ElementOptions
+  popover: any
+  stage: any
+  overlay: any
+  window: any
+  document: any
+}
 
 /**
  * Wrapper around DOMElements to enrich them
  * with the functionality necessary
  */
 export default class Element {
+  public node: HTMLElement
+  public document: Document
+  public window: Window
+  public options: ElementOptions
+  public overlay
+  public popover
+  public stage
+  public animationTimeout
   /**
    * DOM element object
    * @param {Node|HTMLElement} node
@@ -22,22 +49,14 @@ export default class Element {
    * @param {Window} window
    * @param {Document} document
    */
-  constructor({
-    node,
-    options,
-    popover,
-    stage,
-    overlay,
-    window,
-    document,
-  } = {}) {
-    this.node = node;
-    this.document = document;
-    this.window = window;
-    this.options = options;
-    this.overlay = overlay;
-    this.popover = popover;
-    this.stage = stage;
+  constructor(props: ElementProps) {
+    this.node = props.node
+    this.document = props.document;
+    this.window = props.window;
+    this.options = props.options;
+    this.overlay = props.overlay;
+    this.popover = props.popover;
+    this.stage = props.stage;
     this.animationTimeout = null;
   }
 
@@ -52,10 +71,10 @@ export default class Element {
     const width = this.node.offsetWidth;
     const height = this.node.offsetHeight;
 
-    let el = this.node;
+    let el: HTMLElement = this.node;
 
     while (el.offsetParent) {
-      el = el.offsetParent;
+      el = el.offsetParent as HTMLElement;
       top += el.offsetTop;
       left += el.offsetLeft;
     }
@@ -246,7 +265,8 @@ export default class Element {
   fixStackingContext() {
     let parentNode = this.node.parentNode;
     while (parentNode) {
-      if (!parentNode.tagName || parentNode.tagName.toLowerCase() === 'body') {
+      const tagName = (parentNode as HTMLElement).tagName
+      if (!tagName || tagName.toLowerCase() === 'body') {
         break;
       }
 
@@ -271,7 +291,7 @@ export default class Element {
         || (filter && filter !== 'none')
         || (perspective && perspective !== 'none')
       ) {
-        parentNode.classList.add(CLASS_FIX_STACKING_CONTEXT);
+        (parentNode as HTMLElement).classList.add(CLASS_FIX_STACKING_CONTEXT);
       }
 
       parentNode = parentNode.parentNode;

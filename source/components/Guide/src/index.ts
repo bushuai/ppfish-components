@@ -21,15 +21,47 @@ import {
 import Stage from './core/stage';
 import { isDomElement } from './common/utils';
 import './index.less';
+import { string } from 'prop-types';
 
+type Options = {
+  animate?: boolean
+  opacity?: number
+  padding?: number
+  scrollIntoViewOptions?: null
+  counter?: boolean
+  allowClose?: boolean
+  keyboardControl?: boolean
+  overlayClickNext?: boolean
+  stageBackground?: string
+  onHighlightStarted?: () => void
+  onHighlighted?: () => void
+  onDeselected?: () => void
+  onReset?: () => void
+  onNext?: () => void
+  onPrevious?: () => void
+  className?: string
+  popover?:  {
+    className: string,
+    title: string,
+  }
+}
 /**
  * Plugin class that drives the plugin
  */
 export default class Driver {
+  currentMovePrevented: boolean
+  currentStep: number
+  options: Options
+  overlay: Overlay
+  window: Window
+  document: Document
+  steps: any
+  isActivated: boolean
+
   /**
    * @param {Object} options
    */
-  constructor(options = {}) {
+  constructor(options: Options) {
     this.options = {
       animate: SHOULD_ANIMATE_OVERLAY, // Whether to animate or not
       opacity: OVERLAY_OPACITY,    // Overlay opacity
@@ -46,6 +78,11 @@ export default class Driver {
       onReset: () => null,              // When overlay is about to be cleared
       onNext: () => null,               // When next button is clicked
       onPrevious: () => null,           // When previous button is clicked
+      className: '',
+      popover: {
+        className: '',
+        title: ''
+      },
       ...options,
     };
 

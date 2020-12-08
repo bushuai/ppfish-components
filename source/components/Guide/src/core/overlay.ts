@@ -1,11 +1,38 @@
-import { ANIMATION_DURATION_MS, ID_OVERLAY, OVERLAY_HTML } from '../common/constants';
-import { createNodeFromString } from '../common/utils';
+import {
+  ANIMATION_DURATION_MS,
+  ID_OVERLAY,
+  OVERLAY_HTML
+} from "../common/constants";
+import { createNodeFromString } from "../common/utils";
+
+type OverlayOptions = {
+  opacity: number;
+  animate: any;
+  onReset: (node: Element) => void;
+};
 
 /**
  * Responsible for overlay creation and manipulation i.e.
  * cutting out the visible part, animating between the sections etc
  */
+
+type HilightedElement = Element & {
+  node?: Element | HTMLElement;
+  isSame?: (node: Element | HTMLElement) => boolean;
+  onHighlighted?: () => void;
+  onDeselected?: (type?: boolean) => void;
+  showPopover?: () => void;
+  showStage?: () => void;
+  popover?: boolean
+};
 export default class Overlay {
+  public options: OverlayOptions;
+  public highlightedElement: HilightedElement;
+  public lastHighlightedElement: Element;
+  public hideTimer;
+  public window: Window;
+  public document: Document;
+  public node: HTMLElement;
   /**
    * @param {Object} options
    * @param {Window} window
@@ -14,8 +41,8 @@ export default class Overlay {
   constructor(options, window, document) {
     this.options = options;
 
-    this.highlightedElement = null;              // currently highlighted dom element (instance of Element)
-    this.lastHighlightedElement = null;          // element that was highlighted before current one
+    this.highlightedElement = null; // currently highlighted dom element (instance of Element)
+    this.lastHighlightedElement = null; // element that was highlighted before current one
     this.hideTimer = null;
 
     this.window = window;
@@ -31,12 +58,12 @@ export default class Overlay {
   attachNode() {
     let pageOverlay = this.document.getElementById(ID_OVERLAY);
     if (!pageOverlay) {
-      pageOverlay = createNodeFromString(OVERLAY_HTML);
+      pageOverlay = createNodeFromString(OVERLAY_HTML) as HTMLElement;
       document.body.appendChild(pageOverlay);
     }
 
     this.node = pageOverlay;
-    this.node.style.opacity = '0';
+    this.node.style.opacity = "0";
 
     if (!this.options.animate) {
       // For non-animation cases remove the overlay because we achieve this overlay by having
@@ -75,7 +102,10 @@ export default class Overlay {
     element.onHighlightStarted();
 
     // Old element has been deselected
-    if (this.highlightedElement && !this.highlightedElement.isSame(this.lastHighlightedElement)) {
+    if (
+      this.highlightedElement &&
+      !this.highlightedElement.isSame(this.lastHighlightedElement)
+    ) {
       this.highlightedElement.onDeselected();
     }
 
@@ -107,11 +137,11 @@ export default class Overlay {
 
     window.setTimeout(() => {
       this.node.style.opacity = `${this.options.opacity}`;
-      this.node.style.position = 'fixed';
-      this.node.style.left = '0';
-      this.node.style.top = '0';
-      this.node.style.bottom = '0';
-      this.node.style.right = '0';
+      this.node.style.position = "fixed";
+      this.node.style.left = "0";
+      this.node.style.top = "0";
+      this.node.style.bottom = "0";
+      this.node.style.right = "0";
     });
   }
 
@@ -120,7 +150,7 @@ export default class Overlay {
    * @returns {null|*}
    * @public
    */
-  getHighlightedElement() {
+  getHighlightedElement(): HilightedElement {
     return this.highlightedElement;
   }
 
@@ -129,7 +159,7 @@ export default class Overlay {
    * @returns {null|*}
    * @public
    */
-  getLastHighlightedElement() {
+  getLastHighlightedElement(): Element {
     return this.lastHighlightedElement;
   }
 
@@ -160,8 +190,11 @@ export default class Overlay {
     this.window.clearTimeout(this.hideTimer);
 
     if (this.options.animate && !immediate) {
-      this.node.style.opacity = '0';
-      this.hideTimer = this.window.setTimeout(this.removeNode, ANIMATION_DURATION_MS);
+      this.node.style.opacity = "0";
+      this.hideTimer = this.window.setTimeout(
+        this.removeNode,
+        ANIMATION_DURATION_MS
+      );
     } else {
       this.removeNode();
     }

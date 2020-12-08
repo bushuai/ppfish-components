@@ -1,20 +1,43 @@
-import { CLASS_STAGE_NO_ANIMATION, ID_STAGE, STAGE_HTML, CLASS_STAGE_INDEX } from '../common/constants';
-import { createNodeFromString } from '../common/utils';
-import Element from './element';
+import {
+  CLASS_STAGE_NO_ANIMATION,
+  ID_STAGE,
+  STAGE_HTML,
+  CLASS_STAGE_INDEX
+} from "../common/constants";
+import { createNodeFromString } from "../common/utils";
+import Element from "./element";
+
+type StageOption = {
+  totalCount?: number
+  counter?: number
+  currentIndex?: number
+  counterPosition?: string
+  padding?: number
+  stageBackground?: string
+  animate?: number
+}
 
 /**
  * Stage behind the highlighted element to give it a little
  * highlight from rest of the page
  */
 export default class Stage extends Element {
+  currentIndexNode: HTMLElement
+  options: StageOption = {
+    totalCount: 0,
+    counter: 0,
+    currentIndex: 0,
+    counterPosition: '',
+    padding: 0,
+    stageBackground: ''
+  }
   /**
    * @param {Object} options
    * @param {Window} window
    * @param {Document} document
    */
   constructor(options, window, document) {
-    super();
-
+    super(options);
     this.options = options;
     this.window = window;
     this.document = document;
@@ -25,9 +48,10 @@ export default class Stage extends Element {
    * @private
    */
   attachNode() {
-    let stage = this.document.getElementById(ID_STAGE);
+    let stage: HTMLElement = this.document.getElementById(ID_STAGE);
+
     if (!stage) {
-      stage = createNodeFromString(STAGE_HTML());
+      stage = createNodeFromString(STAGE_HTML()) as HTMLElement;
       document.body.appendChild(stage);
     }
 
@@ -58,11 +82,11 @@ export default class Stage extends Element {
    * @private
    */
   setInitialStyle() {
-    this.node.style.display = 'block';
-    this.node.style.left = '0';
-    this.node.style.top = '0';
-    this.node.style.bottom = '';
-    this.node.style.right = '';
+    this.node.style.display = "block";
+    this.node.style.left = "0";
+    this.node.style.top = "0";
+    this.node.style.bottom = "";
+    this.node.style.right = "";
   }
 
   /**
@@ -76,24 +100,24 @@ export default class Stage extends Element {
 
     // 展示或隐藏步骤计数器
     if (this.options.totalCount <= 1 || !this.options.counter) {
-      this.currentIndexNode.style.display = 'none';
+      this.currentIndexNode.style.display = "none";
     } else {
-      this.currentIndexNode.innerHTML = this.options.currentIndex + 1;
-      this.currentIndexNode.style.display = 'block';
+      this.currentIndexNode.innerHTML = this.options.currentIndex + 1 + '';
+      this.currentIndexNode.style.display = "block";
     }
 
     // 设置步骤计数器的位置
     switch (this.options.counterPosition) {
-      case 'leftBottom':
+      case "leftBottom":
         this.currentIndexNode.className = `${CLASS_STAGE_INDEX} left-bottom`;
         break;
-      case 'rightTop':
+      case "rightTop":
         this.currentIndexNode.className = `${CLASS_STAGE_INDEX} right-top`;
         break;
-      case 'rightBottom':
+      case "rightBottom":
         this.currentIndexNode.className = `${CLASS_STAGE_INDEX} right-bottom`;
         break;
-      case 'leftTop':
+      case "leftTop":
       default:
         this.currentIndexNode.className = `${CLASS_STAGE_INDEX}`;
         break;
@@ -101,16 +125,16 @@ export default class Stage extends Element {
 
     // Make it two times the padding because, half will be given on left and half on right
     const requiredPadding = this.options.padding * 2;
-    const width = (position.right - position.left) + (requiredPadding);
-    const height = (position.bottom - position.top) + (requiredPadding);
+    const width = position.right - position.left + requiredPadding;
+    const height = position.bottom - position.top + requiredPadding;
 
     // Show the stage
-    this.node.style.display = 'block';
-    this.node.style.position = 'absolute';
+    this.node.style.display = "block";
+    this.node.style.position = "absolute";
     this.node.style.width = `${width}px`;
     this.node.style.height = `${height}px`;
-    this.node.style.top = `${position.top - (requiredPadding / 2)}px`;
-    this.node.style.left = `${position.left - (requiredPadding / 2)}px`;
+    this.node.style.top = `${position.top - requiredPadding / 2}px`;
+    this.node.style.left = `${position.left - requiredPadding / 2}px`;
     this.node.style.backgroundColor = this.options.stageBackground;
   }
 }
