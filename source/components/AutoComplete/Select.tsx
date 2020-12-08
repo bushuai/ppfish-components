@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import RcSelect, { Option, OptGroup } from './src/index.js';
 import classNames from 'classnames';
 import warning from 'warning';
+import { SelectValue } from './src/SelectTrigger'
 
 export interface AbstractSelectProps {
   prefixCls?: string;
   className?: string;
   size?: 'default' | 'large' | 'small';
-  notFoundContent?: React.ReactNode | null;
+  notFoundContent?: string;
   transitionName?: string;
   choiceTransitionName?: string;
   showSearch?: boolean;
@@ -33,14 +34,12 @@ export interface LabeledValue {
   label: React.ReactNode;
 }
 
-export type SelectValue = string | string[] | number | number[] | LabeledValue | LabeledValue[];
-
 export interface SelectProps extends AbstractSelectProps {
   value?: SelectValue;
   defaultValue?: SelectValue;
   mode?: 'default' | 'multiple' | 'tags' | 'combobox' | string;
   optionLabelProp?: string;
-  firstActiveValue?: string | string[];
+  firstActiveValue?: SelectValue | SelectValue[];
   onChange?: (value: SelectValue, option: React.ReactElement<any> | React.ReactElement<any>[]) => void;
   onSelect?: (value: SelectValue, option: React.ReactElement<any>) => any;
   onDeselect?: (value: SelectValue) => any;

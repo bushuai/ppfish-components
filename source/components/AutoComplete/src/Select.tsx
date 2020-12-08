@@ -37,12 +37,12 @@ import {
 } from "./util";
 import SelectTrigger from "./SelectTrigger";
 import { SelectPropTypes } from "./PropTypes";
+import { SelectValue } from "./SelectTrigger";
 
 function noop() {}
 
 function chaining(...fns) {
   return function(...args) {
-    // eslint-disable-line
     // eslint-disable-line
     for (let i = 0; i < fns.length; i++) {
       if (fns[i] && typeof fns[i] === "function") {
@@ -52,71 +52,69 @@ function chaining(...fns) {
   };
 }
 
+type InputValue = any[] | string | { label: string };
+
 export type TypedReactChild = {
-  key: any;
-  type: {
-    name: string;
-    displayName: string;
-    isSelectOptGroup: boolean;
-    isSelectOption: boolean;
-  };
-  props: React.ReactChild;
+  key?: any;
+  name?: string;
+  displayName?: string;
+  isSelectOptGroup?: boolean;
+  isSelectOption?: boolean;
+  props?: React.ReactChild;
 } & React.ReactChild;
+
 export interface SelectProps {
-  onDeselect: any;
-  onSearch: any;
-  onMouseEnter: any;
-  onMouseLeave: any;
-  onSelect: any;
-  onChange: any;
-  onFocus: any;
-  onBlur: any;
-
-  multiple: any;
-  tokenSeparators: any;
-  showSearch: any;
-  backfill: any;
-  filterOption: any;
-  labelInValue: any;
-
-  tags: any;
-  notFoundContent: any;
-  choiceTransitionName: any;
-  prefixCls: any;
-  maxTagTextLength: any;
-  maxTagCount: any;
-  maxTagPlaceholder: any;
-  removeIcon: any;
-  allowClear: any;
-  className: any;
-  disabled: any;
-  inputIcon: any;
-  value: any;
-  defaultValue: any;
-  autoFocus: any;
-
-  dropdownAlign: any;
-  dropdownClassName: any;
-  dropdownMatchSelectWidth: any;
-  defaultActiveFirstOption: any;
-  dropdownMenuStyle: any;
-  transitionName: any;
-  animation: any;
-  dropdownStyle: any;
-  combobox: any;
-  firstActiveValue: any;
-  getPopupContainer: any;
-  onPopupScroll: any;
-  showAction: any;
-  id: any;
-  style: any;
-  open: any;
-  showArrow: any;
-  optionLabelProp: any;
-  autoClearSearchValue: any;
-  getInputElement: any;
-  onInputKeyDown: any;
-  placeholder: any;
+  onDeselect?: (SelectValue, options) => void;
+  onSearch?: (value: any) => void;
+  onMouseEnter?: (event: React.MouseEvent) => void;
+  onMouseLeave?: (event: React.MouseEvent) => void;
+  onSelect?: (SelectValue, options) => void;
+  onChange?: (value, options) => void;
+  onFocus?: (event?: React.MouseEvent) => void;
+  onBlur?: (value: any) => void;
+  multiple?: boolean;
+  tokenSeparators?: any[];
+  showSearch?: boolean;
+  backfill?: boolean;
+  filterOption?: boolean | ((inputValue: string, option: React.ReactElement<OptionProps>) => any);
+  labelInValue?: boolean;
+  tags?: boolean;
+  notFoundContent?: string;
+  choiceTransitionName?: string;
+  prefixCls?: string;
+  maxTagTextLength?: number;
+  maxTagCount?: number;
+  maxTagPlaceholder?: any;
+  removeIcon?: React.ReactNode;
+  allowClear?: boolean;
+  className?: string;
+  disabled?: boolean;
+  inputIcon?: React.ReactNode;
+  value?: SelectValue;
+  defaultValue?: SelectValue;
+  autoFocus?: boolean;
+  dropdownAlign?: any;
+  dropdownClassName?: any;
+  dropdownMatchSelectWidth?: boolean;
+  defaultActiveFirstOption?: boolean;
+  dropdownMenuStyle?: React.CSSProperties;
+  transitionName?: string;
+  animation?: string;
+  dropdownStyle?: React.CSSProperties;
+  combobox?: boolean;
+  firstActiveValue?: SelectValue | SelectValue[];
+  getPopupContainer?: (node: React.ReactNode) => HTMLElement;
+  onPopupScroll?: () => void;
+  showAction?: string[];
+  id?: string;
+  style?: React.CSSProperties;
+  open?: boolean;
+  showArrow?: boolean;
+  optionLabelProp?: string;
+  autoClearSearchValue?: boolean;
+  getInputElement?: () => React.ReactElement<any>;
+  onInputKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
+  placeholder?: string | React.ReactNode;
 }
 
 export interface SelectState {
@@ -224,7 +222,7 @@ class Select extends React.Component<SelectProps, SelectState> {
       if (!child) {
         return;
       }
-      if (child.type.isSelectOptGroup) {
+      if (child.isSelectOptGroup) {
         Select.getOptionsFromChildren(child.props.children, options);
       } else {
         options.push(child);
@@ -238,7 +236,7 @@ class Select extends React.Component<SelectProps, SelectState> {
     optionsInfo: any,
     useDefaultValue?: boolean
   ) => {
-    let value = [];
+    let value: InputValue;
 
     if ("value" in props && !useDefaultValue) {
       value = toArray(props.value);
@@ -256,7 +254,7 @@ class Select extends React.Component<SelectProps, SelectState> {
     let label = value;
 
     if (props.labelInValue) {
-      label = value.label;
+      label = (value as { label: string }).label;
     } else if (optionsInfo[getMapKey(value)]) {
       label = optionsInfo[getMapKey(value)].label;
     }
@@ -734,7 +732,6 @@ class Select extends React.Component<SelectProps, SelectState> {
             display: hidden ? "none" : "block",
             ...UNSELECTABLE_STYLE
           }}
-          {...UNSELECTABLE_ATTRIBUTE}
           onClick={this.onPlaceholderClick}
           className={`${props.prefixCls}-selection__placeholder`}
         >
@@ -915,7 +912,7 @@ class Select extends React.Component<SelectProps, SelectState> {
     if (!input || (lastValue && lastValue === this.state.backfillValue)) {
       return true;
     }
-    let filterFn = this.props.filterOption;
+    let filterFn;
     if ("filterOption" in this.props) {
       if (this.props.filterOption === true) {
         filterFn = defaultFilter;
@@ -1002,7 +999,7 @@ class Select extends React.Component<SelectProps, SelectState> {
     const canMultiple = isMultipleOrTags(props);
 
     if (canMultiple) {
-      let event: string | {key: string, label: any } = selectedKey;
+      let event: string | { key: string; label: any } = selectedKey;
       if (props.labelInValue) {
         event = {
           key: selectedKey,
@@ -1143,7 +1140,7 @@ class Select extends React.Component<SelectProps, SelectState> {
       if (!child) {
         return;
       }
-      if (child.type.isSelectOptGroup) {
+      if (child.isSelectOptGroup) {
         const innerItems = this.renderFilterOptionsFromChildren(
           child.props.children,
           childrenKeys,
@@ -1167,11 +1164,9 @@ class Select extends React.Component<SelectProps, SelectState> {
       }
 
       warning(
-        child.type.isSelectOption,
+        child.isSelectOption,
         "the children of `Select` should be `Select.Option` or `Select.OptGroup`, " +
-          `instead of \`${child.type.name ||
-            child.type.displayName ||
-            child.type}\`.`
+          `instead of \`${child.name || child.displayName || child}\`.`
       );
 
       const childValue = getValuePropValue(child);
@@ -1242,7 +1237,7 @@ class Select extends React.Component<SelectProps, SelectState> {
             title={toTitle(title || label)}
             style={{
               display: showSelectedValue ? "block" : "none",
-              opacity,
+              opacity
             }}
           >
             {label}
@@ -1258,7 +1253,7 @@ class Select extends React.Component<SelectProps, SelectState> {
             className={`${prefixCls}-search ${prefixCls}-search--inline`}
             key="input"
             style={{
-              display: open ? "block" : "none",
+              display: open ? "block" : "none"
             }}
           >
             {this.getInputElement()}
@@ -1284,7 +1279,6 @@ class Select extends React.Component<SelectProps, SelectState> {
         maxTagPlaceholderEl = (
           <li
             style={{ ...UNSELECTABLE_STYLE }}
-            {...UNSELECTABLE_ATTRIBUTE}
             onMouseDown={preventDefaultEvent}
             className={`${prefixCls}-selection__choice ${prefixCls}-selection__choice__disabled`}
             key={"maxTagPlaceholder"}
@@ -1315,7 +1309,6 @@ class Select extends React.Component<SelectProps, SelectState> {
           return (
             <li
               style={UNSELECTABLE_STYLE}
-              {...UNSELECTABLE_ATTRIBUTE}
               onMouseDown={preventDefaultEvent}
               className={choiceClassName}
               key={singleValue}
@@ -1389,7 +1382,6 @@ class Select extends React.Component<SelectProps, SelectState> {
         // theres no onMouseDown defined in Icon
         // onMouseDown={preventDefaultEvent}
         style={UNSELECTABLE_STYLE}
-        {...UNSELECTABLE_ATTRIBUTE}
         onClick={this.onClearSelection}
       />
     );
@@ -1508,7 +1500,6 @@ class Select extends React.Component<SelectProps, SelectState> {
                 key="arrow"
                 className={`${prefixCls}-arrow`}
                 style={UNSELECTABLE_STYLE}
-                {...UNSELECTABLE_ATTRIBUTE}
                 onClick={this.onArrowClick}
               >
                 {inputIcon || <i className={`${prefixCls}-arrow-icon`} />}

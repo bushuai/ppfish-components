@@ -27,32 +27,36 @@ const BUILT_IN_PLACEMENTS = {
   },
 };
 
+export type SelectValue = { label: string, title: string, name: string }
+
 export interface SelectTriggerProps {
-  onMenuSelect: any
-  onMenuDeselect: any
-  onPopupScroll: any
-  value: any
-  backfillValue: any
-  firstActiveValue: any
-  defaultActiveFirstOption: any
-  dropdownMenuStyle: any
-  transitionName: any
-  animation: any
-  prefixCls: any
-  onPopupFocus: any
-  showAction: any
-  onDropdownVisibleChange: any
-  getPopupContainer: any
-  multiple: any
-  visible: any
-  inputValue: any
-  dropdownAlign: any
-  disabled: any
-  showSearch: any
-  dropdownClassName: any
-  dropdownStyle: any
-  dropdownMatchSelectWidth: any
-  options: any
+  onPopupFocus?: () => void
+  onPopupScroll?: () => void
+  dropdownMatchSelectWidth?: boolean
+  dropdownAlign?: object
+  visible?: boolean
+  disabled?: boolean
+  showSearch?: boolean
+  dropdownClassName?: string
+  multiple?: boolean
+  inputValue?: string
+  filterOption?: boolean | (() => [])
+  options: any[]
+  prefixCls?: string
+  popupClassName?: string
+  showAction?: string[]
+  onMenuSelect?: (object) => void
+  onMenuDeselect?: (object) => void
+  value: string
+  backfillValue?: string
+  firstActiveValue?: SelectValue | SelectValue[]
+  defaultActiveFirstOption?: boolean
+  dropdownMenuStyle?: React.CSSProperties
+  transitionName?: string
+  animation?: string
+  dropdownStyle?: React.CSSProperties
+  onDropdownVisibleChange?: (visible: boolean) => void
+  getPopupContainer?: (node: React.ReactNode) => HTMLElement
 }
 
 export interface SelectTriggerState {
@@ -84,10 +88,10 @@ export default class SelectTrigger extends React.Component<SelectTriggerProps, S
     showAction: PropTypes.arrayOf(PropTypes.string),
   };
 
-  saveDropdownMenuRef = null
-  saveTriggerRef = null
-  dropdownMenuRef = null
-  triggerRef = null
+  saveDropdownMenuRef: (node: React.ReactNode) => void
+  saveTriggerRef: React.Ref<HTMLElement> = null
+  dropdownMenuRef: { menuRef: React.ReactNode }= null
+  triggerRef: typeof Trigger = null
 
   constructor(props) {
     super(props);

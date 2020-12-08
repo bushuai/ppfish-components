@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 export function toTitle(title) {
   if (typeof title === 'string') {
@@ -19,7 +19,7 @@ export function getValuePropValue(child) {
   if (child.key) {
     return child.key;
   }
-  if (child.type && child.type.isSelectOptGroup && props.label) {
+  if (child && child.isSelectOptGroup && props.label) {
     return props.label;
   }
   throw new Error(
@@ -108,8 +108,8 @@ export function getSelectKeys(menuItems, value) {
     return [];
   }
   let selectedKeys = [];
-  React.Children.forEach(menuItems, item => {
-    if (item.type.isMenuItemGroup) {
+  React.Children.forEach(menuItems, (item: any) => {
+    if (item.isMenuItemGroup) {
       selectedKeys = selectedKeys.concat(
         getSelectKeys(item.props.children, value)
       );
@@ -136,7 +136,7 @@ export const UNSELECTABLE_ATTRIBUTE = {
 export function findFirstMenuItem(children) {
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
-    if (child.type.isMenuItemGroup) {
+    if (child.isMenuItemGroup) {
       const found = findFirstMenuItem(child.props.children);
       if (found) {
         return found;
@@ -184,7 +184,9 @@ export function validateOptionValue(value, props) {
   }
 }
 
-export function saveRef(instance: React.ReactInstance, name: string) {
+type SaveRefFunc = (node: React.ReactNode) => void
+
+export function saveRef(instance: React.ReactInstance, name: string): SaveRefFunc {
   return (node: React.ReactNode) => {
     instance[name] = node;
   };
