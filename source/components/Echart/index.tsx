@@ -1,10 +1,12 @@
-import React, {Component} from 'react';
-import classNames from 'classnames';
-import PropTypes from 'prop-types';
-import ReactEchartsCore from 'echarts-for-react/lib/core';
-import defaultTheme from './default-theme';
+import React, { Component } from "react";
+import classNames from "classnames";
+import PropTypes from "prop-types";
+import ReactEcharts from "echarts-for-react";
+import defaultTheme from "./default-theme";
+import { EchartCoreProps } from "./core";
+type EchartProps = Omit<EchartCoreProps, "echarts">;
 
-export default class EchartCore extends Component {
+export default class Echart extends Component<EchartProps> {
   static propTypes = {
     prefixCls: PropTypes.string,
     option: PropTypes.object,
@@ -17,18 +19,16 @@ export default class EchartCore extends Component {
     lazyUpdate: PropTypes.bool,
     onChartReady: PropTypes.func,
     loadingOption: PropTypes.object,
-    showLoading: PropTypes.bool,
-    echarts: PropTypes.object
+    showLoading: PropTypes.bool
   };
 
   static defaultProps = {
-    prefixCls: 'fishd-chart',
+    prefixCls: "fishd-chart",
     theme: defaultTheme,
-    echarts: {},
     notMerge: false,
     lazyUpdate: false,
-    style: {height: '300px'},
-    className: '',
+    style: { height: "300px" },
+    className: "",
     onChartReady: () => {},
     showLoading: false,
     loadingOption: null,
@@ -36,7 +36,9 @@ export default class EchartCore extends Component {
     opts: {}
   };
 
-  constructor(props) {
+  echarts_react: ReactEcharts;
+
+  constructor(props: EchartProps) {
     super(props);
     this.echarts_react = null;
   }
@@ -58,13 +60,11 @@ export default class EchartCore extends Component {
       lazyUpdate,
       onChartReady,
       loadingOption,
-      showLoading,
-      echarts
+      showLoading
     } = this.props;
     return (
-      <ReactEchartsCore
-        ref={(e) => this.echarts_react = e}
-        echarts={echarts}
+      <ReactEcharts
+        ref={e => (this.echarts_react = e)}
         className={classNames(prefixCls, className)}
         style={style}
         option={option}
@@ -80,4 +80,3 @@ export default class EchartCore extends Component {
     );
   }
 }
-
