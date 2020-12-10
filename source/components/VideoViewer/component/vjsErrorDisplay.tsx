@@ -1,11 +1,12 @@
-import React from 'react';
+// @ts-nocheck
+import * as React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
-import Play from './Play';
+import ErrorDisplay from './ErrorDisplay';
 
 const vjsComponent = videojs.getComponent('Component');
 
-class vjsPlay extends vjsComponent {
+class vjsErrorDisplay extends vjsComponent {
 
   constructor(player, options) {
     super(player, options);
@@ -33,14 +34,14 @@ class vjsPlay extends vjsComponent {
    */
   mount() {
     const el = this.el();
-    el.className = "vjs-control vjs-button vjs-customer-button vjs-play";
-    ReactDOM.render(<Play vjsComponent={this} />, el);
+    el.className = "vjs-customer-error-display";
+    ReactDOM.render(<ErrorDisplay vjsComponent={this} />, el);
   }
 }
 
 /**
  * Make sure to register the vjsComponent so Video JS knows it exists
  */
-vjsComponent.registerComponent('vjsPlay', vjsPlay);
+vjsComponent.registerComponent('vjsErrorDisplay', vjsErrorDisplay);
 
-export default vjsPlay;
+export default vjsErrorDisplay;

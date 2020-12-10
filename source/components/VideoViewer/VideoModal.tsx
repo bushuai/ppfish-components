@@ -1,10 +1,24 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import omit from 'omit.js';
-import Modal from '../Modal/index.tsx';
-import Icon from '../Icon/index.tsx';
+import Modal from '../Modal';
+import Icon from '../Icon';
 
-class VideoModal extends Component {
+interface VideoModalProps {
+  prefixCls: string
+  children: React.ReactNode | React.ReactChildren
+  wrapClassName: string
+  maskStyle: React.CSSProperties
+  visible: boolean
+  draggable: boolean
+  mask: boolean
+  closable: boolean
+  onCancel: () => void
+  afterClose: () => void
+  width: string | number
+}
+
+class VideoModal extends React.Component<VideoModalProps> {
   static propTypes = {
     prefixCls: PropTypes.string,
     children: PropTypes.node,

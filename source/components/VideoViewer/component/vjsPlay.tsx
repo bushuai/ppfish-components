@@ -1,11 +1,12 @@
-import React from 'react';
+// @ts-nocheck
+import * as React from 'react';
 import ReactDOM from 'react-dom';
 import videojs from 'video.js';
-import FullScreen from './FullScreen';
+import Play from './Play';
 
 const vjsComponent = videojs.getComponent('Component');
 
-class vjsFullScreen extends vjsComponent {
+class vjsPlay extends vjsComponent {
 
   constructor(player, options) {
     super(player, options);
@@ -33,14 +34,14 @@ class vjsFullScreen extends vjsComponent {
    */
   mount() {
     const el = this.el();
-    el.className = "vjs-control vjs-button vjs-customer-button vjs-fullscreen";
-    ReactDOM.render(<FullScreen vjsComponent={this} />, el);
+    el.className = "vjs-control vjs-button vjs-customer-button vjs-play";
+    ReactDOM.render(<Play vjsComponent={this} />, el);
   }
 }
 
 /**
  * Make sure to register the vjsComponent so Video JS knows it exists
  */
-vjsComponent.registerComponent('vjsFullScreen', vjsFullScreen);
+vjsComponent.registerComponent('vjsPlay', vjsPlay);
 
-export default vjsFullScreen;
+export default vjsPlay;

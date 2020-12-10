@@ -1,11 +1,19 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import Icon from '../../Icon/index.tsx';
-import Popover from '../../Popover/index.tsx';
-import Slider from '../../Slider/index.tsx';
+import Icon from '../../Icon';
+import Popover from '../../Popover';
+import Slider from '../../Slider';
+import { ControlProps } from './DownLoad';
 
-export default class FullScreen extends Component {
+interface FullScreenState {
+  isMuted: boolean
+  currentVolume: number
+  lastVolume: number
+  volumeOpen: boolean
+}
+
+export default class FullScreen extends React.Component<ControlProps, FullScreenState> {
   static propTypes = {
     prefixCls: PropTypes.string,
     vjsComponent: PropTypes.object
@@ -15,6 +23,8 @@ export default class FullScreen extends Component {
     prefixCls: 'fishd-video-viewer-volume'
   }
 
+  player: any
+
   constructor(props) {
     super(props);
 
@@ -22,8 +32,8 @@ export default class FullScreen extends Component {
 
     this.state = {
       isMuted: false,                                        // 是否静音
-      currentVolume: parseInt(this.player.volume() * 100),   // 当前音量
-      lastVolume: parseInt(this.player.volume() * 100),      // 记录上一次音量，点击音量时恢复
+      currentVolume: parseInt(String(this.player.volume() * 100)),   // 当前音量
+      lastVolume: parseInt(String(this.player.volume() * 100)),      // 记录上一次音量，点击音量时恢复
       volumeOpen: false,                                     // 是否打开音量控制
     };
   }
@@ -94,10 +104,10 @@ export default class FullScreen extends Component {
         <Popover
           trigger="hover"
           placement="top"
-          content={getVolumePopupContent(currentVolume)}
+          content={getVolumePopupContent()}
           visible={volumeOpen}
           onVisibleChange={this.onVolumeVisibleChange}
-          getPopupContainer={(node)=>node.parentNode}
+          getPopupContainer={(node)=>node.parentNode as HTMLElement}
         >
           <Icon className="control-volume" type={volumeIcon()} onClick={this.handleVolumeClick}/>
         </Popover>
