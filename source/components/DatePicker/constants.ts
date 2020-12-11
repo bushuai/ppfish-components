@@ -83,7 +83,8 @@ export const TYPE_VALUE_RESOLVER_MAP = {
             str = DATE_FORMATTER(value, format);
             if(str) {
               let weekno = deconstructDate(new Date(value.getTime() + DAY_DURATION)).week;
-              str = /WW/.test(str) ? str.replace(/WW/, weekno < 10 ? `0${weekno}` : weekno) : str.replace(/W/, weekno);
+              const toReplaceText = weekno < 10 ? `0${weekno}` : `${weekno}`
+              str = /WW/.test(str) ? str.replace(/WW/, toReplaceText) : str.replace(/W/, `${weekno}`);
             }
           }
           return str;

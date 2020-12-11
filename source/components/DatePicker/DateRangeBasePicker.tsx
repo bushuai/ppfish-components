@@ -62,7 +62,7 @@ interface DateRangeBasePickerProps {
 interface DateRangeBasePickerState {
   pickerVisible?: boolean;
   value?: Date[] | null;
-  text?: Date | Date[] | string;
+  text?: Date | Date[] | string | string[];
   confirmValue?: Date[] | null | [];
   prevPropValue?: Date[] | null;
 }
@@ -270,7 +270,7 @@ class DateRangeBasePicker extends React.Component<
     );
   };
 
-  parseDate = dateStr => {
+  parseDate = (dateStr: string): Date => {
     if (!dateStr) return null;
     const type = this.type;
     const parser = TYPE_VALUE_RESOLVER_MAP["date"].parser;
