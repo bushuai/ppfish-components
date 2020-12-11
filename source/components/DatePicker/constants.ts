@@ -27,11 +27,11 @@ export const HAVE_TRIGGER_TYPES = [
   'datetimerange'
 ];
 
-export const DATE_FORMATTER = function (value, format) {
+export const DATE_FORMATTER = function (value, format, separator = RANGE_SEPARATOR) {
   return formatDate(value, format);
 };
 
-export const DATE_PARSER = function (text, format) {
+export const DATE_PARSER = function (text, format, separator = RANGE_SEPARATOR) {
   return parseDate(text, format);
 };
 

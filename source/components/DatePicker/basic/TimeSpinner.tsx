@@ -1,9 +1,10 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Scrollbar } from '../scrollbar';
 import debounce from 'lodash/debounce';
 import { getRangeHours } from '../../../utils/date';
+import { PanelData } from '../panel/TimePanel';
 
 function range(end) {
   let r = [];
@@ -19,7 +20,7 @@ const validateMinOrSec = (value) => isNumber(value) && value >= 0 && value <= 59
 
 function propsToState(props) {
   const { hours, minutes, seconds, selectableRange } = props;
-  const state = {};
+  const state: TimeSpinnerState = {};
   const setOnValid = (isValid, cb) => isValid && cb(state);
   setOnValid(validateHour(hours), state => state.hours = hours);
   setOnValid(validateMinOrSec(minutes), state => state.minutes = minutes);
@@ -47,7 +48,27 @@ const propsChangeSaver = (props, state) => PROPS_MATTER.forEach(prop => {
   state['__' + prop] = props[prop];
 });
 
-class TimeSpinner extends React.Component {
+interface TimeSpinnerProps {
+  hours?: number
+  minutes?: number
+  seconds?: number
+  isShowSeconds?: boolean
+  selectableRange?: Array<{ start: Date, end: Date }>[]
+  onChange?: (date: PanelData) => void
+  onSelectRangeChange?: (value: any) => void
+  prefixCls?: string
+}
+
+interface TimeSpinnerState {
+  hours?: number
+  minutes?: number
+  seconds?: number
+  hoursList?: number[]
+  minutesLisit?: number[]
+  secondsList?: number[]
+}
+
+class TimeSpinner extends React.Component<TimeSpinnerProps, TimeSpinnerState> {
 
   static get propTypes() {
     return {
@@ -90,7 +111,10 @@ class TimeSpinner extends React.Component {
     return null;
   }
 
-  constructor(props) {
+  ajustScrollTop
+  handleScroll
+
+  constructor(props: TimeSpinnerProps) {
     super(props);
 
     this.state = {
@@ -134,11 +158,11 @@ class TimeSpinner extends React.Component {
   }
 
   // type: hours, minutes, seconds
-  handleChange(type, value, disabled) {
+  handleChange(type, value, disabled?: boolean) {
     if (disabled) return;
     this.state[type] = value; // eslint-disable-line react/no-direct-mutation-state
-    const changed = {};
-    changed[type] = value;
+    const changed = { type: '' };
+    changed.type = value;
     this.setState({}, () => {
       this.ajustScrollTop(this.state);
     });

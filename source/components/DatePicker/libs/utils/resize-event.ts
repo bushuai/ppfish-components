@@ -1,4 +1,4 @@
-
+// @ts-nocheck
 /* Modified from https://github.com/sdecima/javascript-detect-element-resize
  * version: 0.5.3
  *
@@ -117,7 +117,7 @@ let stylesCreated = false;
 /* istanbul ignore next */
 const createStyles = function() {
   if (!stylesCreated && !isServer) {
-    const animationKeyframes = `@${keyFramePrefix}keyframes ${RESIZE_ANIMATION_NAME} 
+    const animationKeyframes = `@${keyFramePrefix}keyframes ${RESIZE_ANIMATION_NAME}
     { from { opacity: 0; } to { opacity: 0; } } `;
     const animationStyle = `${keyFramePrefix}animation: 1ms ${RESIZE_ANIMATION_NAME};`;
 
@@ -125,7 +125,7 @@ const createStyles = function() {
     const css = `${animationKeyframes}
       .resize-triggers { ${animationStyle} visibility: hidden; opacity: 0; }
       .resize-triggers, .resize-triggers > div, .contract-trigger:before {
-        content: " "; display: block; position: absolute; top: 0; left: 0; 
+        content: " "; display: block; position: absolute; top: 0; left: 0;
         height: 100%; width: 100%; overflow: hidden;
       }
       .resize-triggers > div { background: #eee; overflow: auto; }

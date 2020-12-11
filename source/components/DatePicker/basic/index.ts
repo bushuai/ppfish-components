@@ -1,1 +1,1 @@
-export {default as DateTable} from './DateTable.js';
+export { default as DateTable } from "./DateTable";

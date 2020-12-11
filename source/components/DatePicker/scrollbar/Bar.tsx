@@ -1,10 +1,33 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { BAR_MAP, renderThumbStyle} from './util';
 import {on, off} from '../libs/utils/dom';
 
-export class Bar extends React.Component {
+interface BarProps {
+  vertical?: boolean
+  size?: number | string;
+  move?: number
+  getParentWrap?: () => HTMLElement
+  prefixCls?: string
+}
+export class Bar extends React.Component<BarProps> {
+  static propTypes = {
+    vertical: PropTypes.bool,
+    size: PropTypes.string,
+    move: PropTypes.number,
+    getParentWrap: PropTypes.func.isRequired,
+    prefixCls: PropTypes.string
+  };
+
+  static defaultProps = {
+    prefixCls: 'fishd'
+  };
+
+  cursorDown: boolean
+  rootRef: HTMLDivElement
+  thumbRef: HTMLDivElement
+
   constructor(props) {
     super(props);
 
@@ -22,23 +45,23 @@ export class Bar extends React.Component {
     return this.props.getParentWrap();
   }
 
-  clickThumbHandler(e) {
+  clickThumbHandler(e: React.MouseEvent<HTMLElement>) {
     this.startDrag(e);
     this[this.bar.axis] = (
-      e.currentTarget[this.bar.offset] - 
+      e.currentTarget[this.bar.offset] -
       (e[this.bar.client] - e.currentTarget.getBoundingClientRect()[this.bar.direction])
     );
   }
 
-  clickTrackHandler(e) {
-    const offset = Math.abs(e.target.getBoundingClientRect()[this.bar.direction] - e[this.bar.client]);
+  clickTrackHandler(e: React.MouseEvent<HTMLElement>) {
+    const offset = Math.abs((e.target as HTMLElement).getBoundingClientRect()[this.bar.direction] - e[this.bar.client]);
     const thumbHalf = (this.thumbRef[this.bar.offset] / 2);
     const thumbPositionPercentage = ((offset - thumbHalf) * 100 / this.rootRef[this.bar.offset]);
 
     this.wrap[this.bar.scroll] = (thumbPositionPercentage * this.wrap[this.bar.scrollSize] / 100);
   }
 
-  startDrag(e) {
+  startDrag(e: React.MouseEvent<HTMLElement>) {
     e.nativeEvent.stopImmediatePropagation;
     this.cursorDown = true;
 
@@ -47,7 +70,7 @@ export class Bar extends React.Component {
     document.onselectstart = () => false;
   }
 
-  mouseMoveDocumentHandler(e) {
+  mouseMoveDocumentHandler(e: React.MouseEvent<HTMLElement>) {
     if (this.cursorDown === false) return;
     const prevPage = this[this.bar.axis];
 
@@ -85,15 +108,3 @@ export class Bar extends React.Component {
     );
   }
 }
-
-Bar.propTypes = {
-  vertical: PropTypes.bool,
-  size: PropTypes.string,
-  move: PropTypes.number,
-  getParentWrap: PropTypes.func.isRequired,
-  prefixCls: PropTypes.string
-};
-
-Bar.defaultProps = {
-  prefixCls: 'fishd'
-};

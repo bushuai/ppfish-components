@@ -1,15 +1,15 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { DateTable } from '../basic/index.ts';
+import { DateTable } from '../index';
 import Input from '../../Input';
 import Icon from '../../Icon';
 import Button from '../../Button';
-import TimePicker  from '../../TimePicker/index.js';
-import { converSelectRange } from '../TimePicker.js';
-import TimePanel from './TimePanel.js';
-import TimeSelectPanel from './TimeSelectPanel.js';
-import YearAndMonthPopover from './YearAndMonthPopover.js';
+import TimePicker  from '../../TimePicker';
+import { converSelectRange } from '../TimePicker';
+import TimePanel from './TimePanel';
+import TimeSelectPanel from './TimeSelectPanel';
+import YearAndMonthPopover from './YearAndMonthPopover';
 import isEqual from 'lodash/isEqual';
 import {
   SELECTION_MODES,
@@ -51,6 +51,13 @@ const dateToStr = (date) => {
 };
 
 class DateRangePanel extends React.Component {
+  static isValid = (value: string[], disabledDate) => {
+    if(value && value.length >= 2 && value[0] > value[1]) return false;
+    return (
+      typeof disabledDate === 'function' && (value && value.length >= 2) ?
+      !(disabledDate(value[0]) || disabledDate(value[1])) : true
+    );
+  };
   static get propTypes() {
     return {
       prefixCls: PropTypes.string,
@@ -846,13 +853,5 @@ class DateRangePanel extends React.Component {
     );
   }
 }
-
-DateRangePanel.isValid = (value, disabledDate) => {
-  if(value && value.length >= 2 && value[0] > value[1]) return false;
-  return (
-    typeof disabledDate === 'function' && (value && value.length >= 2) ?
-    !(disabledDate(value[0]) || disabledDate(value[1])) : true
-  );
-};
 
 export default DateRangePanel;

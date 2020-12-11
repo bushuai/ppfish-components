@@ -1,18 +1,64 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
-import classNames from 'classnames';
-import { addResizeListener, removeResizeListener } from '../libs/utils/resize-event';
-import { getScrollBarWidth } from './scrollar-width';
-import { Bar } from './Bar';
+import * as React from "react";
+import PropTypes from "prop-types";
+import ReactDOM from "react-dom";
+import classNames from "classnames";
+import {
+  addResizeListener,
+  removeResizeListener
+} from "../libs/utils/resize-event";
+import { getScrollBarWidth } from "./scrollar-width";
+import { Bar } from "./Bar";
 
-export class Scrollbar extends React.Component {
+interface ScrollbarProps {
+  native?: string;
+  viewStyle?: React.CSSProperties;
+  wrapStyle?: React.CSSProperties;
+  viewClass?: string;
+  children?: React.ReactNode | React.ReactChildren;
+  viewComponent?: string;
+  wrapClass?: string;
+  noresize?: boolean;
+  className?: string;
+  prefixCls?: string;
+}
+interface ScrollbarState {
+  sizeWidth?: number | string;
+  sizeHeight?: number | string;
+  moveX?: number;
+  moveY?: number;
+}
+
+export class Scrollbar extends React.Component<ScrollbarProps, ScrollbarState> {
+  update
+  native
+  cleanRAF
+  resizeDom: HTMLElement
+  cleanResize: () =>  void
+
+  static propTypes = {
+    native: PropTypes.bool,
+    wrapStyle: PropTypes.object,
+    wrapClass: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    viewClass: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    viewStyle: PropTypes.object,
+    className: PropTypes.string,
+    viewComponent: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+    noresize: PropTypes.bool,
+    prefixCls: PropTypes.string
+  };
+
+  static defaultProps = {
+    viewComponent: "div",
+    prefixCls: "fishd"
+  };
+
+
   constructor(props) {
     super(props);
 
     this.state = {
-      sizeWidth: '0',
-      sizeHeight: '0',
+      sizeWidth: "0",
+      sizeHeight: "0",
       moveX: 0,
       moveY: 0
     };
@@ -20,38 +66,39 @@ export class Scrollbar extends React.Component {
     this.update = this._update.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     if (this.native) return;
     let rafId = requestAnimationFrame(this.update);
-    this.cleanRAF = ()=>{
+    this.cleanRAF = () => {
       cancelAnimationFrame(rafId);
     };
   }
 
   componentDidUpdate() {
-    this.resizeDom = ReactDOM.findDOMNode(this.refs.resize);
-    if (!this.props.noresize){
+    this.resizeDom = ReactDOM.findDOMNode(this.refs.resize) as HTMLElement;
+
+    if (!this.props.noresize) {
       addResizeListener(this.resizeDom, this.update);
-      this.cleanResize = ()=>{
+      this.cleanResize = () => {
         removeResizeListener(this.resizeDom, this.update);
       };
     }
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.cleanRAF();
     this.cleanResize && this.cleanResize();
   }
 
-  get wrap(){
-    return this.refs.wrap;
+  get wrap (): HTMLElement {
+    return this.refs.wrap as HTMLElement;
   }
 
   handleScroll() {
     const wrap = this.wrap;
     this.setState({
-      moveY: ((wrap.scrollTop * 100) / wrap.clientHeight),
-      moveX: ((wrap.scrollLeft * 100) / wrap.clientWidth)
+      moveY: (wrap.scrollTop * 100) / wrap.clientHeight,
+      moveX: (wrap.scrollLeft * 100) / wrap.clientWidth
     });
   }
 
@@ -60,42 +107,62 @@ export class Scrollbar extends React.Component {
     const wrap = this.wrap;
     if (!wrap) return;
 
-    heightPercentage = (wrap.clientHeight * 100 / wrap.scrollHeight);
-    widthPercentage = (wrap.clientWidth * 100 / wrap.scrollWidth);
+    heightPercentage = (wrap.clientHeight * 100) / wrap.scrollHeight;
+    widthPercentage = (wrap.clientWidth * 100) / wrap.scrollWidth;
 
-    let sizeHeight = (heightPercentage < 100) ? (heightPercentage + '%') : '';
-    let sizeWidth = (widthPercentage < 100) ? (widthPercentage + '%') : '';
+    let sizeHeight = heightPercentage < 100 ? heightPercentage + "%" : "";
+    let sizeWidth = widthPercentage < 100 ? widthPercentage + "%" : "";
 
-    this.setState({sizeHeight, sizeWidth});
+    this.setState({ sizeHeight, sizeWidth });
   }
 
   render() {
     /* eslint-disable */
     let {
-      native, viewStyle, wrapStyle, viewClass, children, viewComponent, wrapClass, noresize,
-      className, prefixCls, ...others} = this.props;
-    let {moveX, moveY, sizeWidth, sizeHeight} = this.state;
+      native,
+      viewStyle,
+      wrapStyle,
+      viewClass,
+      children,
+      viewComponent,
+      wrapClass,
+      noresize,
+      className,
+      prefixCls,
+      ...others
+    } = this.props;
+    let { moveX, moveY, sizeWidth, sizeHeight } = this.state;
     /* eslint-enable */
 
     let style = wrapStyle;
     const gutter = getScrollBarWidth();
     if (gutter) {
       const gutterWith = `-${gutter}px`;
-      if (Array.isArray(wrapStyle)){
-        style = Object.assign.apply(null, [...wrapStyle, {marginRight: gutterWith, marginBottom: gutterWith}]);
+      if (Array.isArray(wrapStyle)) {
+        style = Object.assign.apply(null, [
+          ...wrapStyle,
+          { marginRight: gutterWith, marginBottom: gutterWith }
+        ]);
       } else {
-        style = Object.assign({}, wrapStyle, {marginRight: gutterWith, marginBottom: gutterWith});
+        style = Object.assign({}, wrapStyle, {
+          marginRight: gutterWith,
+          marginBottom: gutterWith
+        });
       }
     }
 
-    const view = React.createElement(viewComponent, {
-      className: classNames(`${prefixCls}-scrollbar__view`, viewClass),
-      style: viewStyle,
-      ref: 'resize'
-    }, children);
+    const view = React.createElement(
+      viewComponent,
+      {
+        className: classNames(`${prefixCls}-scrollbar__view`, viewClass),
+        style: viewStyle,
+        ref: "resize"
+      },
+      children
+    );
 
     let nodes;
-    if (!native){
+    if (!native) {
       const wrap = (
         <div
           {...others}
@@ -103,60 +170,49 @@ export class Scrollbar extends React.Component {
           key={0}
           style={style}
           onScroll={this.handleScroll.bind(this)}
-          className={
-            classNames(
-              wrapClass,
-              `${prefixCls}-scrollbar__wrap`,
-              gutter ? '' : `${prefixCls}-scrollbar__wrap--hidden-default`
-            )
-          }
+          className={classNames(
+            wrapClass,
+            `${prefixCls}-scrollbar__wrap`,
+            gutter ? "" : `${prefixCls}-scrollbar__wrap--hidden-default`
+          )}
         >
           {view}
         </div>
       );
       nodes = [
         wrap,
-        <Bar key={1} move={moveX} size={sizeWidth} getParentWrap={()=>this.wrap} />,
-        <Bar key={2} move={moveY} size={sizeHeight} getParentWrap={()=>this.wrap} vertical={true} />,
+        <Bar
+          key={1}
+          move={moveX}
+          size={sizeWidth}
+          getParentWrap={() => this.wrap}
+        />,
+        <Bar
+          key={2}
+          move={moveY}
+          size={sizeHeight}
+          getParentWrap={() => this.wrap}
+          vertical={true}
+        />
       ];
-    }else {
+    } else {
       nodes = [
-        (
-          <div
-            {...others}
-            key={0}
-            ref="wrap"
-            className={classNames(wrapClass, `${prefixCls}-scrollbar__wrap`)}
-            style={style}>
-            {view}
-          </div>
-        )
+        <div
+          {...others}
+          key={0}
+          ref="wrap"
+          className={classNames(wrapClass, `${prefixCls}-scrollbar__wrap`)}
+          style={style}
+        >
+          {view}
+        </div>
       ];
     }
 
-    return React.createElement('div', {className: classNames(`${prefixCls}-scrollbar`, className)}, nodes);
+    return React.createElement(
+      "div",
+      { className: classNames(`${prefixCls}-scrollbar`, className) },
+      nodes
+    );
   }
 }
-
-Scrollbar.propTypes = {
-  native: PropTypes.bool,
-  wrapStyle: PropTypes.object,
-  wrapClass: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.object
-  ]),
-  viewClass: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.object
-  ]),
-  viewStyle: PropTypes.object,
-  className: PropTypes.string,
-  viewComponent: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.element
-  ]),
-  noresize: PropTypes.bool,
-  prefixCls: PropTypes.string
-};
-
-Scrollbar.defaultProps = {
-  viewComponent: 'div',
-  prefixCls: 'fishd'
-};

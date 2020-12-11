@@ -1,9 +1,9 @@
-import {require_condition} from './assert';
-import * as Errors from './errors';
+import { require_condition } from "./assert";
+import * as Errors from "./errors";
 
-export {require_condition, Errors};
+export { require_condition, Errors };
 
-export function range(start, stop, step) {
+export function range(start: number, stop: number, step: number) {
   if (stop == null) {
     stop = start || 0;
     start = 0;

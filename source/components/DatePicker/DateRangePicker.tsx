@@ -1,8 +1,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import DateRangeBasePicker from './DateRangeBasePicker.js';
-import DateRangePanel from './panel/DateRangePanel.js';
-import TimeSelectPanel from './panel/TimeSelectPanel.js';
+import DateRangeBasePicker from './DateRangeBasePicker';
+import DateRangePanel from './panel/DateRangePanel';
+import TimeSelectPanel from './panel/TimeSelectPanel';
 import TimePanel from './panel/TimePanel';
 import { converSelectRange } from './TimePicker';
 

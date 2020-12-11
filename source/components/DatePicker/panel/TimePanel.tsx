@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import TimeSpinner from '../basic/TimeSpinner.js';
@@ -6,10 +6,11 @@ import { limitRange, isLimitRange, parseDate } from '../../../utils/date';
 import { DEFAULT_FORMATS } from '../constants';
 import Locale from '../../../utils/date/locale';
 import isEqual from 'lodash/isEqual';
+import Panel from 'components/ColorPicker/Panel.js';
 
 const mapPropsToState = (props) => {
   const { format, value, selectableRange } = props;
-  const state = {
+  const state: TimePanelState = {
     format: format || DEFAULT_FORMATS.time,
     currentDate: value || parseDate('00:00:00', DEFAULT_FORMATS.time),
     confirmButtonDisabled: value === null || !TimePanel.isValid(value, selectableRange),
@@ -19,8 +20,35 @@ const mapPropsToState = (props) => {
 
   return state;
 };
-class TimePanel extends React.Component {
 
+interface TimePanelProps {
+  prefixCls?: string
+  format?: string                  //basePicker
+  value?: Date         //basePicker
+  onPicked?: (date: Date, isKeepPannelOpen: boolean, isConfirmValue: boolean) => void       //basePicker
+  onCancelPicked?: () => void //basePicker
+  selectableRange?: Array<{ start: Date, end: Date }>[]
+  onSelectRangeChange?: (range) => void
+  isShowCurrent?: boolean
+  footer?: () => React.ReactNode
+  onValueChange?: (value) => void
+}
+
+interface TimePanelState {
+  isShowSeconds?: boolean
+  format?: string
+  currentDate?: Date
+  confirmButtonDisabled?: boolean
+  currentButtonDisabled?: boolean
+  prevPropValue?: string
+}
+
+export type PanelData = {
+  hours?: number
+  minutes?: number
+  seconds?: number
+}
+class TimePanel extends React.Component<TimePanelProps, TimePanelState> {
   static get propTypes() {
     return {
       prefixCls: PropTypes.string,
@@ -62,7 +90,7 @@ class TimePanel extends React.Component {
     this.state = mapPropsToState(props);
   }
 
-  handleChange = (date) => {
+  handleChange = (date: PanelData) => {
     const { currentDate } = this.state;
     const newDate = new Date(currentDate);
 
@@ -95,7 +123,7 @@ class TimePanel extends React.Component {
   }
 
   // 点击确定按钮
-  handleConfirm = (isKeepPannelOpen, isConfirmValue) => {
+  handleConfirm = (isKeepPannelOpen: boolean, isConfirmValue: boolean) => {
     const { currentDate } = this.state;
     const { onPicked, selectableRange } = this.props;
     const date = new Date(limitRange(currentDate, selectableRange, DEFAULT_FORMATS.time));

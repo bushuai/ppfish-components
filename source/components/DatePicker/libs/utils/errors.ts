@@ -1,6 +1,6 @@
 //taken from : http://stackoverflow.com/questions/31089801/extending-error-in-javascript-with-es6-syntax
 export class ExtendableError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = this.constructor.name;
     this.message = message;
@@ -13,7 +13,7 @@ export class ExtendableError extends Error {
 }
 
 export class MethodImplementationRequiredError extends ExtendableError {
-  constructor(msg){
+  constructor(msg: string){
     super(msg);
   }
 }

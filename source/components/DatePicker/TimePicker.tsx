@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import BasePicker from './BasePicker.js';
 import TimePanel from './panel/TimePanel.js';
@@ -19,6 +19,9 @@ export const converSelectRange = (props) => {
 };
 
 export default class TimePicker extends BasePicker {
+  _onSelectionChange
+  refInputRoot
+
   static get propTypes() {
     return Object.assign({}, {
       // '18:30:00 - 20:30:00' or ['09:30:00 - 12:00:00', '14:30:00 - 18:30:00']

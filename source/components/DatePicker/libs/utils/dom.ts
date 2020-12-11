@@ -2,7 +2,7 @@ let isServer = false;
 /* istanbul ignore next */
 export const on = (function() {
   if (!isServer && document.addEventListener) {
-    return function(element, event, handler) {
+    return function(element: HTMLElement | Document, event, handler) {
       if (element && event && handler) {
         element.addEventListener(event, handler, false);
       }
@@ -10,6 +10,7 @@ export const on = (function() {
   } else {
     return function(element, event, handler) {
       if (element && event && handler) {
+        // @ts-ignore
         element.attachEvent('on' + event, handler);
       }
     };
@@ -19,14 +20,15 @@ export const on = (function() {
 /* istanbul ignore next */
 export const off = (function() {
   if (!isServer && document.removeEventListener) {
-    return function(element, event, handler) {
+    return function(element: HTMLElement | Document, event, handler) {
       if (element && event) {
         element.removeEventListener(event, handler, false);
       }
     };
   } else {
-    return function(element, event, handler) {
+    return function(element: HTMLElement, event, handler) {
       if (element && event) {
+        // @ts-ignore
         element.detachEvent('on' + event, handler);
       }
     };

@@ -1,15 +1,26 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import BasePicker from './BasePicker.js';
-import DatePanel from './panel/DatePanel.js';
-import TimeSelectPanel from './panel/TimeSelectPanel.js';
+import BasePicker, { Mode } from './BasePicker';
+import DatePanel from './panel/DatePanel';
+import TimeSelectPanel from './panel/TimeSelectPanel';
 import TimePanel from './panel/TimePanel';
 import { converSelectRange } from './TimePicker';
 import { SELECTION_MODES } from '../../utils/date';
 import DateRangePicker from './DateRangePicker';
 
+type DatePickerProps = {
+  shortcuts: {text: string, onClick: () => void}[]
+  disabledDate: () =>void
+  firstDayOfWeek: number
+  footer: () => void
+  showTime: boolean
+  yearCount: number
+  showWeekNumber: boolean
+  mode: Mode
+}
+
 export default class DatePicker extends BasePicker {
-  DateRangePicker = DateRangePicker
+  static DateRangePicker = DateRangePicker
 
   static get propTypes() {
     return Object.assign({}, {
@@ -33,7 +44,7 @@ export default class DatePicker extends BasePicker {
     return Object.assign({}, DatePanel.defaultProps, BasePicker.defaultProps);
   }
 
-  constructor(props) {
+  constructor(props: DatePickerProps) {
     let type = props.showTime ? 'datetime' : 'date';
     switch (props.mode) {
       // case SELECTION_MODES.YEAR:

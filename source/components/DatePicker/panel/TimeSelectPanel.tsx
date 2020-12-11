@@ -1,12 +1,26 @@
-import React from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Scrollbar } from '../scrollbar';
 import scrollIntoView from 'dom-scroll-into-view';
 import isEqual from 'lodash/isEqual';
+import { TimeProps } from '../TimeSelect';
 
-class TimeSelectPanel extends React.Component {
+type ResultItem = { disabled: boolean, value: string }
 
+interface TimeSelectPanelProps {
+  prefixCls?: string
+  value?: string                   //basePicker
+  onPicked?: (value: any, isKeepPannel?: boolean, isConfirmValue?: boolean) => void      //basePicker
+  start?: string
+  end?: string
+  step?: string
+  minTime?: string
+  maxTime?: string
+  dateParser?: (date: string) => Date | null
+}
+
+class TimeSelectPanel extends React.Component<TimeSelectPanelProps> {
   static get propTypes() {
     return {
       prefixCls: PropTypes.string,
@@ -33,6 +47,11 @@ class TimeSelectPanel extends React.Component {
     };
   }
 
+  static isValid = (value: string, { start, end, step, minTime, maxTime }: TimeProps): boolean => {
+    const items = getItems({ start, end, step, minTime, maxTime });
+    return !!items.filter(e => !e.disabled).find(e => e.value === value);
+  }
+
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if ('value' in nextProps && !isEqual(nextProps.vlaue, prevState.prevPropValue)) {
@@ -41,7 +60,9 @@ class TimeSelectPanel extends React.Component {
     return null;
   }
 
-  constructor(props) {
+  timeSelectRoot: HTMLDivElement
+
+  constructor(props: TimeSelectPanelProps) {
     super(props);
     this.state = {};
   }
@@ -88,7 +109,7 @@ class TimeSelectPanel extends React.Component {
                 <div
                   key={idx}
                   className={classNames('time-select-item', { selected: value === item.value, disabled: item.disabled })}
-                  disabled={item.disabled}
+                  // disabled={item.disabled}
                   onClick={() => this.handleClick(item)}
                 >
                   {item.value}
@@ -102,13 +123,8 @@ class TimeSelectPanel extends React.Component {
   }
 }
 
-TimeSelectPanel.isValid = (value, { start, end, step, minTime, maxTime }) => {
-  const items = getItems({ start, end, step, minTime, maxTime });
-  return !!items.filter(e => !e.disabled).find(e => e.value === value);
-};
-
-const getItems = ({ start, end, step, minTime, maxTime }) => {
-  const result = [];
+const getItems = ({ start, end, step, minTime, maxTime }: TimeSelectPanelProps): ResultItem[]=> {
+  const result: ResultItem[] = [];
 
   if (start && end && step) {
     let current = start;
