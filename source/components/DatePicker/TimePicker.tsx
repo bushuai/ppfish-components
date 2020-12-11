@@ -4,6 +4,7 @@ import BasePicker from './BasePicker.js';
 import TimePanel from './panel/TimePanel.js';
 import { TYPE_VALUE_RESOLVER_MAP, DEFAULT_FORMATS } from './constants';
 import debounce from 'lodash/debounce';
+import TimeSelect from './TimeSelect';
 
 export const converSelectRange = (props) => {
   let selectableRange = [];
@@ -21,6 +22,8 @@ export const converSelectRange = (props) => {
 export default class TimePicker extends BasePicker {
   _onSelectionChange
   refInputRoot
+
+  static TimeSelect = TimeSelect
 
   static get propTypes() {
     return Object.assign({}, {
