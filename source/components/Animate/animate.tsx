@@ -2,7 +2,8 @@ import React, {
   Component,
   Children,
   ReactNode,
-  ReactChild
+  ReactChild,
+  ReactChildren
 } from 'react';
 import PropTypes from 'prop-types';
 import { TransitionGroup } from 'react-transition-group';
@@ -15,7 +16,7 @@ const FirstChild = props => {
 };
 
 export interface AnimateHooks {
-  beforeAppear?: (node?: HTMLElement) => void
+  beforeAppear?: () => void
   onAppear?: (node?: HTMLElement) => void
   afterAppear?: (node?: HTMLElement) => void
 
@@ -29,11 +30,15 @@ export interface AnimateHooks {
 }
 
 export type AnimateProps  = {
-  animation: string | object
+  animation: string | {
+    appear: string
+    enter: string
+    leave: string
+  }
   animationAppear: boolean
   component: ReactNode | string
   singleMode: boolean
-  children: ReactNode | ReactNode[]
+  children: ReactNode
 } & AnimateHooks
 
 
@@ -120,9 +125,10 @@ class Animate extends Component<AnimateProps, any> {
       ...others
     } = this.props;
 
-    const animateChildren = Children.map(children, (child: KeyedReactNode) => {
+    const animateChildren = Children.map(children, (child: ReactNode) => {
       return (
         <AnimateChild
+          // @ts-ignore
           key={child.key}
           names={this.normalizeNames(animation)}
           onAppear={beforeAppear}

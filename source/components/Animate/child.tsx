@@ -7,7 +7,7 @@ import {
   removeClass,
   guid
 } from '../../utils';
-import { AnimateHooks, AnimateHookFn } from './animate';
+import { AnimateHooks } from './animate';
 
 const noop = () => { };
 
