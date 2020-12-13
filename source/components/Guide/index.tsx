@@ -12,21 +12,21 @@ import Button from "../Button";
 import "./style/index.less";
 
 interface GuideProps {
-  prefixCls: string;
-  className: string;
-  style: React.CSSProperties;
-  mode: string;
-  prevBtnText: string;
-  nextBtnText: string;
-  doneBtnText: string;
-  skipBtnText: string;
-  steps: any[];
-  visible: boolean;
-  counter: boolean;
-  mask: boolean;
-  allowClose: boolean;
-  keyboardControl: boolean;
-  onClose: () => void;
+  allowClose?: boolean;
+  className?: string;
+  counter?: boolean;
+  doneBtnText?: string;
+  keyboardControl?: boolean;
+  mask?: boolean;
+  mode?: string;
+  nextBtnText?: string;
+  onClose?: () => void;
+  prevBtnText?: string;
+  skipBtnText?: string;
+  steps?: any[];
+  style?: React.CSSProperties;
+  visible?: boolean;
+  prefixCls?: string;
 }
 
 interface GuideState {
