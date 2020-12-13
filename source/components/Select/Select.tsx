@@ -18,61 +18,61 @@ import OptGroup from "./OptGroup";
 const noop = () => {};
 
 interface SelectProps {
-  allowClear: boolean;
+  allowClear?: boolean;
   children?: React.ReactNode | React.ReactNode[] | React.ReactChildren;
   className?: string;
-  tagWidth: string | number;
-  defaultActiveFirstOption: boolean;
+  tagWidth?: string | number;
+  defaultActiveFirstOption?: boolean;
   defaultValue?: string | number | any[] | object;
-  disabled: boolean;
+  disabled?: boolean;
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean;
   dropdownStyle?: React.CSSProperties;
-  errorMessage: string | React.ReactNode;
+  errorMessage?: string | React.ReactNode;
   extraOptions?: string | React.ReactNode;
-  filterOption: boolean | ((value: SelectValue, child?: React.ReactNode) => void);
+  filterOption?: boolean | ((value: SelectValue, child?: React.ReactNode) => void);
   getPopupContainer?: () => HTMLElement | React.ReactNode;
-  labelClear: boolean;
-  labelInValue: boolean;
+  labelClear?: boolean;
+  labelInValue?: boolean;
   loading?: boolean;
   maxCount?: number;
   maxLabelClearPanelHeight?: string | number;
-  maxScrollHeight: string | number;
-  mode: "multiple" | "single";
-  multipleSelectAllText: string;
-  notFoundContent: string | React.ReactNode;
-  onChange: (value?: any) => void;
+  maxScrollHeight?: string | number;
+  mode?: "multiple" | "single";
+  multipleSelectAllText?: string;
+  notFoundContent?: string | React.ReactNode;
+  onChange?: (value?: any) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onPopupScroll?: () => void;
   onSearch?: (value: any) => void;
   onSelect?: (value: any) => void;
   onVisibleChange?: (value: any) => void;
-  placeholder: string;
-  placement:
+  placeholder?: string;
+  placement?:
     | "bottomLeft"
     | "bottomCenter"
     | "bottomRight"
     | "topLeft"
     | "topCenter"
     | "topRight";
-  prefixCls: string;
-  searchInputProps: object;
-  searchPlaceholder: string;
-  selectAllText: string;
-  showArrow: boolean;
-  showMultipleSelectAll: boolean;
-  showOptionCheckedIcon: boolean;
-  showSearch: boolean;
-  showSelectAll: boolean;
-  showSingleClear: boolean;
-  size: "default" | "small" | "large";
-  style: React.CSSProperties;
+  prefixCls?: string;
+  searchInputProps?: object;
+  searchPlaceholder?: string;
+  selectAllText?: string;
+  showArrow?: boolean;
+  showMultipleSelectAll?: boolean;
+  showOptionCheckedIcon?: boolean;
+  showSearch?: boolean;
+  showSelectAll?: boolean;
+  showSingleClear?: boolean;
+  size?: "default" | "small" | "large";
+  style?: React.CSSProperties;
   value?: string | number | any[] | object;
-  visible: boolean;
-  esc: boolean;
-  required: boolean;
-  filterInactiveOption: boolean;
+  visible?: boolean;
+  esc?: boolean;
+  required?: boolean;
+  filterInactiveOption?: boolean;
 }
 
 type SelectValue = { key: string; label: string; title: string };

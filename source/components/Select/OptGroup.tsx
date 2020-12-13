@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 
 interface OptGroupProps {
-  _isShow: boolean;
-  children: React.ReactNode | React.ReactChildren;
-  label: React.ReactNode | string;
-  prefixCls: string;
+  _isShow?: boolean;
+  children?: React.ReactNode | React.ReactChildren;
+  label?: React.ReactNode | string;
+  prefixCls?: string;
 }
 
 export default class OptGroup extends React.Component<OptGroupProps> {

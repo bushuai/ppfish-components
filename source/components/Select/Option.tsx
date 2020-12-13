@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 interface OptionProps {
-  activeKey: string | number
-  checked: boolean | (() => void)
-  children: React.ReactNode | React.ReactChildren
-  disabled: boolean
-  onOptionClick: (e: React.MouseEvent<any>, option: any) => void
-  prefixCls: string
-  showOptionCheckedIcon: boolean
-  title: string
-  value: string | number | React.ReactNode
+  activeKey?: string | number
+  checked?: boolean | (() => void)
+  children?: React.ReactNode | React.ReactChildren
+  disabled?: boolean
+  onOptionClick?: (e: React.MouseEvent<any>, option: any) => void
+  prefixCls?: string
+  showOptionCheckedIcon?: boolean
+  title?: string
+  value?: string | number | React.ReactNode
 }
 
 export default class Option extends React.Component<OptionProps> {
