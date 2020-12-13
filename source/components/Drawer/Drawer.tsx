@@ -3,19 +3,39 @@ import * as PropTypes from "prop-types";
 import RcDrawer from "./src";
 import { RcDrawerProps, RcDrawerState } from "./src/RcDrawer";
 
+type EventType =
+  | React.KeyboardEvent<HTMLDivElement>
+  | React.MouseEvent<HTMLDivElement | HTMLButtonElement>;
+
 interface DrawerProps {
-  visible: boolean;
-  mask: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  width?: number | string;
+  height?: number | string;
+  open?: boolean;
+  placement?: string;
+  level?: string | [string, string];
+  levelMove?: number | [number, number];
+  ease?: string;
+  duration?: string;
+  getContainer?: string | React.ReactNode | (() => React.ReactNode) | boolean;
+  handler?: boolean | React.ReactNode;
+  onChange?: (flag: boolean) => void;
+  onMaskClick?: (e: EventType) => void;
+  onHandleClick?: (e: EventType) => void;
+  onCloseClick?: (e: EventType) => void;
+  showMask?: boolean;
+  maskStyle?: React.CSSProperties;
+  closed?: boolean;
+  visible?: boolean;
+  mask?: boolean;
 }
 
-export default class Drawer extends React.Component<
-  RcDrawerProps & DrawerProps,
-  RcDrawerState
-> {
+export default class Drawer extends React.Component<DrawerProps, RcDrawerState> {
   static propTypes = {
-    prefixCls: PropTypes.string,
+    // prefixCls: PropTypes.string,
     className: PropTypes.string,
-    wrapperClassName: PropTypes.string,
+    // wrapperClassName: PropTypes.string,
     width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     visible: PropTypes.bool,
@@ -42,7 +62,7 @@ export default class Drawer extends React.Component<
   };
 
   static defaultProps = {
-    prefixCls: "fishd-drawer",
+    // prefixCls: "fishd-drawer",
     placement: "right",
     onChange: () => {},
     onMaskClick: () => {},
@@ -56,7 +76,7 @@ export default class Drawer extends React.Component<
   render() {
     const {
       className,
-      wrapperClassName,
+      // wrapperClassName,
       width,
       height,
       visible,
@@ -79,7 +99,7 @@ export default class Drawer extends React.Component<
     return (
       <RcDrawer
         className={className}
-        wrapperClassName={wrapperClassName}
+        // wrapperClassName={wrapperClassName}
         width={width}
         height={height}
         open={visible}
