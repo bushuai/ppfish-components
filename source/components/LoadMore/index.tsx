@@ -7,19 +7,21 @@ import "./style/index.less";
 const noop = () => {};
 
 interface LoadMoreProps {
-  onLoadMore: () => void;
-  status: string;
+  buttonSize: 'small' | 'default' | 'large';
+  className: string;
   defaultText: string | React.ReactNode;
-  loadingText: string | React.ReactNode;
-  errorText: string | React.ReactNode;
+  onLoadMore: () => void;
   endText: string | React.ReactNode;
+  errorText: string | React.ReactNode;
+  loadingText: string | React.ReactNode;
+  status: string;
   extraCls: string;
-  buttonSize: string;
 }
 
 export default class LoadMore extends React.Component<LoadMoreProps> {
   static propTypes = {
     onLoadMore: PropTypes.func,
+    className: PropTypes.string,
     status: PropTypes.string,
     defaultText: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     loadingText: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
