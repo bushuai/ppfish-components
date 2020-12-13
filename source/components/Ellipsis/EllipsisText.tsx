@@ -1,6 +1,6 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import Tooltip, { TooltipProps } from '../Tooltip'
+import Tooltip, { TooltipProps } from "../Tooltip";
 
 export const getStrFullLength = (str = "") =>
   str.split("").reduce((pre, cur) => {
@@ -28,13 +28,13 @@ export const cutStrByFullLength = (str = "", maxLength: number) => {
 };
 
 export interface EllipsisTextProps {
-  prefix: string
-  text: React.ReactNode | string
-  length: number
-  tooltip: boolean
-  className: string
-  fullWidthRecognition: boolean
-  tooltipProps: TooltipProps
+  prefix: string;
+  text: React.ReactNode | string;
+  length: number;
+  tooltip: boolean;
+  className: string;
+  fullWidthRecognition: boolean;
+  tooltipProps: TooltipProps;
 }
 
 const EllipsisText: React.SFC<EllipsisTextProps> = ({
@@ -98,4 +98,4 @@ EllipsisText.propTypes = {
   tooltipProps: PropTypes.object
 };
 
-export default EllipsisText
+export default EllipsisText;

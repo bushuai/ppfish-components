@@ -1,3 +1,3 @@
 import './style/index.less';
 
-export { default } from './Ellipsis';
+export { default as Ellipsis } from './Ellipsis';

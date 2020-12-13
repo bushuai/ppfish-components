@@ -10,15 +10,15 @@ import EllipsisText from "./EllipsisText";
 const isSupportLineClamp = document.body.style.webkitLineClamp !== undefined;
 
 interface EllipsisProps {
-  prefix: string;
-  lines: number;
-  width: number | string;
-  length: number;
-  tooltip: boolean;
-  tooltipProps: TooltipProps;
-  fullWidthRecognition: boolean;
-  className: string;
-  style: React.CSSProperties;
+  tooltip?: boolean;
+  tooltipProps?: TooltipProps;
+  length?: number;
+  lines?: number;
+  fullWidthRecognition?: boolean;
+  className?: string;
+  width?: number | string;
+  style?: React.CSSProperties;
+  prefix?: string;
 }
 
 interface EllipsisState {
