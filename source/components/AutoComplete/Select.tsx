@@ -8,24 +8,24 @@ import { SelectValue } from './src/SelectTrigger'
 export interface AbstractSelectProps {
   prefixCls?: string;
   className?: string;
+  allowClear?: boolean;
+  disabled?: boolean;
+  filterOption?: boolean | ((inputValue: string, option: React.ReactElement<OptionProps>) => any);
   size?: 'default' | 'large' | 'small';
   notFoundContent?: string;
   transitionName?: string;
   choiceTransitionName?: string;
   showSearch?: boolean;
-  allowClear?: boolean;
-  disabled?: boolean;
   showArrow?: boolean;
   style?: React.CSSProperties;
   tabIndex?: number;
-  placeholder?: string | React.ReactNode;
+  placeholder?: string;
   defaultActiveFirstOption?: boolean;
   dropdownClassName?: string;
   dropdownStyle?: React.CSSProperties;
   dropdownMenuStyle?: React.CSSProperties;
   dropdownMatchSelectWidth?: boolean;
   onSearch?: (value: string) => any;
-  filterOption?: boolean | ((inputValue: string, option: React.ReactElement<OptionProps>) => any);
   id?: string;
 }
 

@@ -27,7 +27,8 @@ const BUILT_IN_PLACEMENTS = {
   },
 };
 
-export type SelectValue = { label: string, title: string, name: string }
+export type SelectItemValue = { label: string | React.ReactNode, title: string, name: string }
+export type SelectValue = string | string[] | SelectItemValue | SelectItemValue[]
 
 export interface SelectTriggerProps {
   onPopupFocus?: () => void

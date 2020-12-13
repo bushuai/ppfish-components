@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Option, OptGroup } from './src';
-import Select, { AbstractSelectProps, SelectValue, OptionProps, OptGroupProps } from './Select';
+import { SelectValue } from './src/SelectTrigger'
+import Select, { AbstractSelectProps, OptionProps, OptGroupProps } from './Select';
 import classNames from 'classnames';
 import Input from '../Input';
 import InputElement from './InputElement';
@@ -24,19 +25,21 @@ export type ValidInputElement =
   React.ReactElement<AutoCompleteInputProps>;
 
 export interface AutoCompleteProps extends AbstractSelectProps {
+  autoFocus?: boolean;
+  backfill?: boolean;
+  children?:
+    | ValidInputElement
+    | React.ReactElement<OptionProps>
+    | Array<React.ReactElement<OptionProps>>;
+
   value?: SelectValue;
   defaultValue?: SelectValue;
   dataSource?: DataSourceItemType[];
-  autoFocus?: boolean;
-  backfill?: boolean;
   highlightSelected?: boolean;
   optionLabelProp?: string;
   getPopupContainer?: (triggerNode: Element) => HTMLElement;
   onChange?: (value: SelectValue) => void;
   onSelect?: (value: SelectValue, option: Object) => any;
-  children?: ValidInputElement |
-    React.ReactElement<OptionProps> |
-    Array<React.ReactElement<OptionProps>>;
 }
 
 function isSelectOptionOrSelectOptGroup(child: any): Boolean {
