@@ -48,13 +48,13 @@ interface DatePanelProps {
   prefixCls?: string
   format?: string //basePicker
   value?: Date //basePicker
-  onPick?: (date: Date) => void //basePicker
+  onPick?: (value?: Date[], isKeepPannel?: boolean, isConfirmValue?: boolean) => void //basePicker
   onCancelPicked?: () => void //basePicker
   yearCount?: number
   showWeekNumber?: boolean
   shortcuts?: { text: string, onClick: () => void }[]
   mode?: Mode
-  disabledDate?: () => void
+  disabledDate?: (date: Date, mode: string) => boolean
   firstDayOfWeek?: number
   footer?: () => void
   showTime?: boolean
@@ -66,11 +66,12 @@ interface DatePanelProps {
 }
 
 interface DatePanelState {
-  currentDate?: any
-  date?: any
+  currentDate?: Date
+  date?: Date
   dateInputText?: string
-  time?: any
-  currentView?: any
+  time?: Date
+  currentView?: string
+  prevPropValue?: any
 }
 
 class DatePanel extends React.Component<DatePanelProps, DatePanelState> {
@@ -129,7 +130,11 @@ class DatePanel extends React.Component<DatePanelProps, DatePanelState> {
     };
   }
 
-  static propsToState({ value, format, defaultTimeValue }) {
+  static propsToState({ value, format, defaultTimeValue }: {
+    value?: Date,
+    format?: string,
+    defaultTimeValue?: Date
+  }) {
     const state: DatePanelState = {};
     state.currentDate = isValidValue(value) ? toDate(value) : new Date(); // 日历视图
     state.date = toDate(value); // 日期

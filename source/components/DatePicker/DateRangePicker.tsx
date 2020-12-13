@@ -28,6 +28,7 @@ export default class DateRangePicker extends DateRangeBasePicker {
     return Object.assign({}, DateRangePanel.defaultProps, DateRangeBasePicker.defaultProps);
   }
 
+  // FIXME: props typing
   constructor(props) {
     super(props, props.showTime ? 'datetimerange' : 'daterange', {});
   }
@@ -70,7 +71,9 @@ export default class DateRangePicker extends DateRangeBasePicker {
 
   pickerPanel(state) {
     const value = state.value && this.isDateValid(state.value) ? state.value : null;
+
     return (
+      // @ts-ignore to much unmatched props
       <DateRangePanel
         {...this.props}
         value={value}

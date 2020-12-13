@@ -5,6 +5,7 @@ import TimePanel from './panel/TimePanel.js';
 import { TYPE_VALUE_RESOLVER_MAP, DEFAULT_FORMATS } from './constants';
 import debounce from 'lodash/debounce';
 import TimeSelect from './TimeSelect';
+import pick from 'lodash/pick'
 
 export const converSelectRange = (props) => {
   let selectableRange = [];
@@ -20,7 +21,7 @@ export const converSelectRange = (props) => {
 };
 
 export default class TimePicker extends BasePicker {
-  _onSelectionChange
+  _onSelectionChange: (range: any) => void
   refInputRoot
 
   static TimeSelect = TimeSelect
@@ -59,9 +60,27 @@ export default class TimePicker extends BasePicker {
 
   pickerPanel(state) {
     const value = state.value && this.isDateValid(state.value) ? state.value : null;
+
+    /**
+        prefixCls?: string
+        format?: string                  //basePicker
+        value?: Date         //basePicker
+        onPicked?: (date: Date, isKeepPannelOpen: boolean, isConfirmValue: boolean) => void       //basePicker
+        onCancelPicked?: () => void //basePicker
+        selectableRange?: Array<{ start: Date, end: Date }>[]
+        onSelectRangeChange?: (range) => void
+        isShowCurrent?: boolean
+        footer?: () => React.ReactNode
+        onValueChange?
+     */
     return (
       <TimePanel
-        {...this.props}
+        {...pick(this.props, [
+          'format',
+          'isShowCurrent',
+          'footer',
+          'onValueChange'
+        ])}
         selectableRange={converSelectRange(this.props)}
         onSelectRangeChange={this._onSelectionChange}
         value={value}

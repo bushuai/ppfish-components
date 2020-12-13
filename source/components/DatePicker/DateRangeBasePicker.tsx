@@ -15,6 +15,7 @@ import { isValidValue, isValidValueArr, equalDateArr } from "../../utils/date";
 import placements from "./placements";
 import isEqual from "lodash/isEqual";
 import { Placement } from "./BasePicker";
+import { TimeSelectProps } from "./TimeSelect";
 
 const haveTriggerType = type => {
   return HAVE_TRIGGER_TYPES.indexOf(type) !== -1;
@@ -47,16 +48,15 @@ interface DateRangeBasePickerProps {
   onChange?: (value: any) => void;
   onVisibleChange?: (visible: boolean) => void;
   style?: React.CSSProperties;
-  showTime: any;
-
-  disabledDate;
-  startTimeSelectMode;
-  startTimeSelectModeProps;
-  startTimeSelectableRange;
-  endTimeSelectModeProps;
-  endTimeSelectMode;
-  endTimeSelectableRange;
-  onError(value: any): any;
+  showTime: boolean;
+  disabledDate?: (date: Date, mode: string) => boolean;
+  startTimeSelectMode: 'TimePicker' | 'TimeSelect';
+  startTimeSelectModeProps?: TimeSelectProps;
+  startTimeSelectableRange?: string | string[];
+  endTimeSelectModeProps?: TimeSelectProps;
+  endTimeSelectMode?: 'TimePicker' | 'TimeSelect';
+  endTimeSelectableRange?: string | string[];
+  onError?(value: any): any;
 }
 
 interface DateRangeBasePickerState {
@@ -207,7 +207,7 @@ class DateRangeBasePicker extends React.Component<
     return undefined;
   }
 
-  onPicked = (value, isKeepPannel = false, isConfirmValue = true) => {
+  onPicked = (value: Date[], isKeepPannel = false, isConfirmValue = true) => {
     // 当为日期范围选择面板时，把结束时间默认设置为23:59:59:999
     if (this.type == "daterange" && value && value.length === 2) {
       value[1] = new Date(value[1].setHours(23, 59, 59, 999));

@@ -32,6 +32,7 @@ import {
 } from '../../../utils/date';
 import Locale from '../../../utils/date/locale';
 import {TYPE_VALUE_RESOLVER_MAP, DEFAULT_FORMATS} from '../constants';
+import { BasePickerProps } from '../BasePicker';
 
 const TimeSelect = TimePicker.TimeSelect;
 
@@ -50,7 +51,26 @@ const dateToStr = (date) => {
   return result;
 };
 
-class DateRangePanel extends React.Component {
+interface DateRangePanelState {
+  leftDate: Date
+  rightDate: Date
+  minDate: Date
+  maxDate: Date
+  minDateInputText: string
+  maxDateInputText: string
+  minTime: string
+  maxTime: string
+  startTimeSelectableRange: string | string[]
+  endTimeSelectableRange: string | string[]
+  endTimeSelectModeProps: {
+    start: string
+    end: string
+    step: string
+    minTime: string
+    maxTime: string
+  }
+}
+class DateRangePanel extends React.Component<BasePickerProps, DateRangePanelState> {
   static isValid = (value: string[], disabledDate) => {
     if(value && value.length >= 2 && value[0] > value[1]) return false;
     return (
@@ -236,8 +256,8 @@ class DateRangePanel extends React.Component {
         let min = minTime;
         let max = setTime(new Date(minTime), new Date(new Date().setHours(23,59,59)));
         for(let range of propsTimeRangeArr) {
-          min = Math.max(min, range[0]);
-          max = Math.min(max, range[1]);
+          min = Math.max(min.valueOf(), range[0]);
+          max = Math.min(max.valueOf(), range[1]);
           rangeResult.push(`${getTimeString(new Date(min))} - ${getTimeString(new Date(max))}`);
         }
       }else{

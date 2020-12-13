@@ -14,6 +14,7 @@ import KEYCODE from "../../utils/KeyCode";
 import { isValidValue, equalDate } from "../../utils/date";
 import placements from "./placements";
 import isEqual from "lodash/isEqual";
+import { TimeSelectProps } from "./TimeSelect";
 
 const haveTriggerType = type => {
   return HAVE_TRIGGER_TYPES.indexOf(type) !== -1;
@@ -42,16 +43,24 @@ export type Placement =
   | "topRight";
 
 export type BasePickerProps = {
+  allowClear?: boolean;
   className?: string;
+  disabled?: boolean;
+  esc?: boolean;
+  shortcuts?: {text: string, onClick: () => void}[]
+
   placeholder?: string;
   format?: string;
   placement?: Placement;
   prefixCls?: string;
   getPopupContainer?: (node: HTMLElement) => HTMLElement;
   showTrigger?: boolean;
-  allowClear?: boolean;
-  disabled?: boolean;
-  esc?: boolean;
+  firstDayOfWeek?: number
+  disabledDate?: () =>void
+  footer?: () => void
+  showWeekNumber?: boolean
+  showTime: boolean
+
   value?: Date;
   onFocus?: (e: React.FocusEvent) => void;
   onBlur?: (e: React.FocusEvent) => void;
@@ -59,12 +68,11 @@ export type BasePickerProps = {
   onVisibleChange?: (visible: boolean) => void;
   style?: React.CSSProperties;
   separator?: string;
+  yearCount?: number
 
-  disabledDate: any
-  showTime: any
-  timeSelectMode: any
-  timeSelectModeProps: any
-  timeSelectableRange: any
+  timeSelectMode?: 'TimePicker' | 'TimeSelect'
+  timeSelectModeProps?: TimeSelectProps
+  timeSelectableRange?: string[]
 };
 
 interface BasePickerState {
@@ -82,6 +90,16 @@ class BasePicker extends React.Component<BasePickerProps, BasePickerState> {
       className: PropTypes.string,
       placeholder: PropTypes.string,
       format: PropTypes.string,
+      disabledDate: PropTypes.func,
+      footer: PropTypes.func,
+      showTime: PropTypes.bool,
+      showWeekNumber: PropTypes.bool,
+      shortcuts: PropTypes.arrayOf(
+        PropTypes.shape({
+          text: PropTypes.string.isRequired,
+          onClick: PropTypes.func.isRequired
+        })
+      ),
       placement: PropTypes.oneOf([
         "bottomLeft",
         "bottomCenter",
@@ -91,6 +109,7 @@ class BasePicker extends React.Component<BasePickerProps, BasePickerState> {
         "topRight"
       ]),
       prefixCls: PropTypes.string,
+      firstDayOfWeek: PropTypes.number,
       getPopupContainer: PropTypes.func,
       showTrigger: PropTypes.bool,
       allowClear: PropTypes.bool,
@@ -101,7 +120,8 @@ class BasePicker extends React.Component<BasePickerProps, BasePickerState> {
       onBlur: PropTypes.func,
       onChange: PropTypes.func,
       onVisibleChange: PropTypes.func,
-      style: PropTypes.object
+      style: PropTypes.object,
+      yearCount: PropTypes.number
     };
   }
 
@@ -170,7 +190,7 @@ class BasePicker extends React.Component<BasePickerProps, BasePickerState> {
   refInputRoot: Input;
   trigger: HTMLElement;
 
-  constructor(props, _type, state) {
+  constructor(props, _type?, state?) {
     super(props);
     require_condition(typeof _type === "string");
 
@@ -178,7 +198,6 @@ class BasePicker extends React.Component<BasePickerProps, BasePickerState> {
     this.inputClick = false;
 
     this.state = {
-      // FIXME: typing
       // @ts-ignore
       [$type]: _type,
       pickerVisible: false,

@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Scrollbar } from '../scrollbar';
 import scrollIntoView from 'dom-scroll-into-view';
 import isEqual from 'lodash/isEqual';
-import { TimeProps } from '../TimeSelect';
+import { TimeProps, TimeSelectProps } from '../TimeSelect';
 
 type ResultItem = { disabled: boolean, value: string }
 
@@ -47,7 +47,7 @@ class TimeSelectPanel extends React.Component<TimeSelectPanelProps> {
     };
   }
 
-  static isValid = (value: string, { start, end, step, minTime, maxTime }: TimeProps): boolean => {
+  static isValid = (value: string, { start, end, step, minTime, maxTime }: TimeSelectProps): boolean => {
     const items = getItems({ start, end, step, minTime, maxTime });
     return !!items.filter(e => !e.disabled).find(e => e.value === value);
   }
