@@ -7,18 +7,19 @@ function isString(str: any) {
 }
 
 export interface StepProps {
+  description?: string | React.ReactNode;
+  icon?: React.ReactNode;
+  status?: string;
+  title?: string | React.ReactNode;
+
   className?: string;
   prefixCls?: string;
   style?: React.CSSProperties;
   wrapperStyle?: React.CSSProperties;
   itemWidth?: number | string;
-  status?: string;
   iconPrefix?: string;
-  icon?: React.ReactNode;
   adjustMarginRight?: number | string;
   stepNumber?: number;
-  description?: string | React.ReactNode;
-  title?: string | React.ReactNode;
   progressDot?:
     | boolean
     | ((content: React.ReactNode, options: object) => React.ReactNode);
