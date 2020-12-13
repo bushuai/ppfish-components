@@ -3,21 +3,18 @@ import PropTypes from "prop-types";
 import classnames from "classnames";
 import omit from "omit.js";
 import Video from "./Video";
-import VideoModal from "./VideoModal";
+import VideoModal, { VideoModalProps } from "./VideoModal";
 import Icon from "../Icon";
 
 interface VideoViewerProps {
-  prefixCls: string
-  width: string | number
-  height: string | number
-  poster: string
-  modalProps: {
-    afterClose: () => void
-    onCancel: () => void
-  }
-  videoProps: object
-  failedMessage: string
-  onThumbClick: (e: React.MouseEvent) => void
+  prefixCls?: string
+  width?: string | number
+  height?: string | number
+  poster?: string
+  failedMessage?: string
+  onThumbClick?: (e: React.MouseEvent) => void
+  modalProps?: VideoModalProps
+  videoProps?: VideoModalProps
 }
 
 interface VideoViewerState {
@@ -30,9 +27,9 @@ class VideoViewer extends React.Component<VideoViewerProps, VideoViewerState> {
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     poster: PropTypes.string,
+    failedMessage: PropTypes.string,
     modalProps: PropTypes.object,
     videoProps: PropTypes.object,
-    failedMessage: PropTypes.string,
     onThumbClick: PropTypes.func
   };
 
@@ -45,8 +42,8 @@ class VideoViewer extends React.Component<VideoViewerProps, VideoViewerState> {
   };
 
   video: React.RefObject<any>
-  static Video = Video
 
+  static Video = Video
   static VideoModal = VideoModal;
 
   constructor(props) {

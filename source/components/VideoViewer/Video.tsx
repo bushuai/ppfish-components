@@ -19,6 +19,7 @@ interface VideoViewerProps {
   preload?: "auto" | "none" | "metadata";
   controls?: boolean;
   download?: boolean;
+  downloadSrc?: string;
   bigPlayButton?: boolean;
 }
 

@@ -4,18 +4,18 @@ import omit from 'omit.js';
 import Modal from '../Modal';
 import Icon from '../Icon';
 
-interface VideoModalProps {
-  prefixCls: string
-  children: React.ReactNode | React.ReactChildren
-  wrapClassName: string
-  maskStyle: React.CSSProperties
-  visible: boolean
-  draggable: boolean
-  mask: boolean
-  closable: boolean
-  onCancel: () => void
-  afterClose: () => void
-  width: string | number
+export interface VideoModalProps {
+  prefixCls?: string
+  width?: string | number
+  afterClose?: () => void
+  draggable?: boolean
+  mask?: boolean
+  onCancel?: () => void
+  visible?: boolean
+  children?: React.ReactNode | React.ReactChildren
+  wrapClassName?: string
+  maskStyle?: React.CSSProperties
+  closable?: boolean
 }
 
 class VideoModal extends React.Component<VideoModalProps> {
