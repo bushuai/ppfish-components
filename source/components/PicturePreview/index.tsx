@@ -75,19 +75,19 @@ type ImageItem = {
 }
 
 interface PicturePreviewProps {
-  prefixCls: string;
-  className: string;
-  style: React.CSSProperties;
-  toolbar: boolean;
-  source: ImageItem[];
-  draggable: boolean;
-  esc: boolean;
-  mask: boolean;
-  progress: boolean;
-  visible: boolean;
-  activeIndex: number;
-  onClose: () => void;
-  children: React.ReactNode;
+  activeIndex?: number;
+  className?: string;
+  draggable?: boolean;
+  esc?: boolean;
+  mask?: boolean;
+  onClose?: () => void;
+  progress?: boolean;
+  source?: ImageItem[];
+  style?: React.CSSProperties;
+  toolbar?: boolean;
+  visible?: boolean;
+  prefixCls?: string;
+  children?: React.ReactNode;
 }
 
 interface PicturePreviewState {
