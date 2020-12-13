@@ -4,38 +4,39 @@ import classNames from "classnames";
 import Slider from "../Slider";
 import Icon from "../Icon";
 import Popover from "../Popover";
-import { SliderValue } from "components/Slider/Slider";
 
 export interface AudioPlayerProps {
-  prefixCls: string;
-  className: string;
-  size: "default" | "small";
-  title: string;
+  prefixCls?: string;
+
+  className?: string;
+  controlVolume?: boolean;
+  controlProgress?: boolean;
+  displayTime?: boolean;
+  download?: boolean;
   src: string;
-  loop: boolean;
-  preload: "auto" | "metadata" | "none";
-  autoPlay: boolean;
-  muted: boolean;
-  volume: number;
-  controlVolume: boolean;
-  controlProgress: boolean;
-  displayTime: boolean;
-  rateOptions: {
-    value: number;
+  title?: string;
+  size?: "default" | "small";
+
+  autoPlay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  preload?: "auto" | "metadata" | "none";
+  volume?: number;
+  rateOptions?: {
+    value?: number;
     suffix?: string;
     decimal?: number;
     range?: number[];
   };
-  download: boolean;
-  onLoadedMetadata: () => void;
-  onCanPlay: () => void;
-  onCanPlayThrough: () => void;
-  onAbort: () => void;
-  onEnded: () => void;
-  onError: () => void;
-  onPause: () => void;
-  onPlay: () => void;
-  onSeeked: () => void;
+  onAbort?: () => void;
+  onCanPlay?: () => void;
+  onCanPlayThrough?: () => void;
+  onEnded?: () => void;
+  onError?: () => void;
+  onLoadedMetadata?: () => void;
+  onPause?: () => void;
+  onPlay?: () => void;
+  onSeeked?: () => void;
 }
 
 export interface AudioPlayerState {
@@ -45,7 +46,7 @@ export interface AudioPlayerState {
   volumeOpen: boolean;
   rateOpen: boolean;
   allTime: number;
-  currentTime: number | [number, number];
+  currentTime: number;
   disabled: boolean;
   rate: number;
 }
@@ -130,7 +131,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
     }
   }
 
-  controlAudio = (type: string, value?: SliderValue) => {
+  controlAudio = (type: string, value?: number) => {
     const audio = this.audioInstance;
     const numberValue = Number(value);
     switch (type) {
@@ -196,14 +197,14 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
         }
         audio.playbackRate = numberValue;
         this.setState({
-          rate: (value as number),
+          rate: value as number,
           rateOpen: false
         });
         break;
     }
   };
 
-  millisecondToDate = (time, format = true) => {
+  millisecondToDate = (time: number, format = true) => {
     const second = Math.floor(time % 60);
     let minute = Math.floor(time / 60);
     if (!format) {
@@ -236,7 +237,9 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
             }
             tipFormatter={null}
             defaultValue={currentVolume}
-            onChange={(value: number) => this.controlAudio("changeVolume", value)}
+            onChange={(value: number) =>
+              this.controlAudio("changeVolume", value)
+            }
           />
         </div>
       </div>
@@ -244,13 +247,14 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
   };
 
   // 调节音量面板状态变化
-  onVolumeVisibleChange = state => {
+  onVolumeVisibleChange = (state: boolean) => {
     this.setState({
       volumeOpen: state
     });
   };
+
   // 调节播放速度板状态变化
-  onRateVisibleChange = state => {
+  onRateVisibleChange = (state: boolean) => {
     this.setState({
       rateOpen: state
     });
@@ -268,6 +272,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
       disabled,
       rate
     } = this.state;
+
     const {
       prefixCls,
       title,
@@ -300,8 +305,8 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
       decimal: rateDecimal = 1,
       range: rateRange = []
     } = rateOptions;
-    const getRateText = number =>
-      `${Number(number).toFixed(rateDecimal)}${rateSuffix}`;
+    const getRateText = (rate: number) =>
+      `${Number(rate).toFixed(rateDecimal)}${rateSuffix}`;
 
     const sizeCls = size === "small" ? "sm" : "";
     const pausePlayIcon = !isPlay ? "play" : "stop";
@@ -371,8 +376,10 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
                 value={currentTime}
                 disabled={disabled}
                 tipMode="all"
-                tipFormatter={(value: SliderValue) => this.millisecondToDate(value)}
-                onChange={(value: SliderValue) =>
+                tipFormatter={(value: number) =>
+                  this.millisecondToDate(value as number)
+                }
+                onChange={(value: number) =>
                   this.controlAudio("changeCurrentTime", value)
                 }
               />
@@ -382,7 +389,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
           {displayTime ? (
             <div className="box time-box">
               <span className="current">
-                {this.millisecondToDate(currentTime) +
+                {this.millisecondToDate(currentTime as number) +
                   " / " +
                   this.millisecondToDate(allTime)}
               </span>
