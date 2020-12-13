@@ -24,29 +24,30 @@ function prevent(e) {
 function noop() {}
 
 interface ColorPickerProps {
-  alpha: number
-  children: React.ReactNode
-  className: string
-  color: string
-  colorMap: string[]
-  defaultAlpha: number
-  defaultColor: string
-  disabled: boolean
-  enableAlpha: boolean
-  enableHistory: boolean
-  maxHistory: number
-  mode: ModeTypes
-  onChange: (state: ColorPickerState) => void
-  onVisibleChange: (visible: boolean) => void
-  prefixCls: string
-  quickMode: boolean
-  style: CSSProperties
-  popupStyle: CSSProperties
-  esc: boolean
-  getPopupContainer: (e: any) => React.ReactNode
-  align: string
-  animation: string
-  transitionName: string
+  alpha?: number
+  className?: string
+  color?: string
+  colorHistory: PickedColor[]
+  colorMap?: string[]
+  defaultAlpha?: number
+  defaultColor?: string
+  disabled?: boolean
+  enableAlpha?: boolean
+  enableHistory?: boolean
+  getPopupContainer?: (e: HTMLElement) => HTMLElement
+  onChange?: (state: ColorPickerState) => void
+  onVisibleChange?: (visible: boolean) => void
+  quickMode?: boolean
+  style?: React.CSSProperties
+  popupStyle?: React.CSSProperties
+  esc?: boolean
+  children?: React.ReactNode
+  maxHistory?: number
+  mode?: ModeTypes
+  prefixCls?: string
+  align?: string
+  animation?: string
+  transitionName?: string
 }
 
 interface ColorPickerState {

@@ -14,7 +14,6 @@ import Icon from '../Icon';
 function noop() {}
 
 interface QuickPanelProps {
-  __useInComponent?: boolean
   alpha?: number
   className?: string
   color?: string
@@ -25,19 +24,20 @@ interface QuickPanelProps {
   disabled?: boolean
   enableAlpha?: boolean
   enableHistory?: boolean
-  getPopupContainer?: () => React.ReactNode
-  maxHistory?: number
-  mode?: 'RGB' | 'HSL' | ''
-  onBlur?: () => void
+  getPopupContainer?: (node: HTMLElement) => HTMLElement
+  mode?: 'RGB' | 'HSL'| 'HSB'
   onChange?: ({ color: string, alpha: number }) => void
-  onFocus?: () => void
-  onMount?: (node: React.ReactNode) => void
   onVisibleChange?: (visible: boolean) => void
   prefixCls?: string
   userSelectColor?: boolean
   style?: object
   popupStyle?: object
   esc?: boolean
+  onBlur?: () => void
+  onFocus?: () => void
+  onMount?: (node: React.ReactNode) => void
+  maxHistory?: number
+  __useInComponent?: boolean
 }
 
 interface QuickPanelState {
