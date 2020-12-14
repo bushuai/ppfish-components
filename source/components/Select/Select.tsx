@@ -210,7 +210,7 @@ class Select extends React.Component<SelectProps, SelectState> {
   //获取所有option的[{label,key,title}]
   static getOptionFromChildren = (children, plainOptionList = [], filter?) => {
     React.Children.forEach(children, (child: any) => {
-      if (child && child.isSelectOption) {
+      if (child && child.type.isSelectOption) {
         const selectOption = {
           label: child.props.children,
           key: "value" in child.props ? child.props.value : child.key,
@@ -221,7 +221,7 @@ class Select extends React.Component<SelectProps, SelectState> {
         } else {
           plainOptionList.push(selectOption);
         }
-      } else if (child && child.isSelectOptGroup) {
+      } else if (child && child.type.isSelectOptGroup) {
         Select.getOptionFromChildren(
           child.props.children,
           plainOptionList,
@@ -590,7 +590,7 @@ class Select extends React.Component<SelectProps, SelectState> {
       .toLowerCase();
     React.Children.forEach(children, (child: any) => {
       let filterFlag = false;
-      if (child && child.isSelectOption) {
+      if (child && child.type.isSelectOption) {
         if (typeOfOption === "function") {
           filterFlag = (filterOption as Function)(searchValue, child);
         } else if (typeOfOption === "boolean") {
@@ -599,7 +599,7 @@ class Select extends React.Component<SelectProps, SelectState> {
         if (filterFlag) {
           ChildrenList.push(child);
         }
-      } else if (child && child.isSelectOptGroup) {
+      } else if (child && child.type.isSelectOptGroup) {
         const children = this.getFilteredChildren(child.props.children);
         ChildrenList.push(
           React.cloneElement(child, {
