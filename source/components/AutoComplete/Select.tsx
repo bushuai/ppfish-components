@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import RcSelect, { Option, OptGroup } from './src/index';
 import classNames from 'classnames';
 import warning from 'warning';
-import { SelectValue } from './src/SelectTrigger'
+
+export type SelectItemValue = { label: string | React.ReactNode, title: string, name: string }
+export type SelectValue = string | string[] | SelectItemValue | SelectItemValue[]
 
 export interface AbstractSelectProps {
   prefixCls?: string;

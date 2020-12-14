@@ -1,40 +1,18 @@
-import React, { cloneElement } from "react";
-import { findDOMNode } from "react-dom";
-import PropTypes from "prop-types";
-import Menu from "../../Menu/src/index.js";
-import scrollIntoView from "dom-scroll-into-view";
-import raf from "raf";
-import { toArray, getSelectKeys, preventDefaultEvent, saveRef } from "./util";
+import React, { cloneElement } from 'react';
+import { findDOMNode } from 'react-dom';
+import PropTypes from 'prop-types';
+import Menu from '../../Menu/src/index.js';
+import scrollIntoView from 'dom-scroll-into-view';
+import raf from 'raf';
+import { toArray, getSelectKeys, preventDefaultEvent, saveRef } from './util';
 
-export interface DropdownMenuProps {
-  defaultActiveFirstOption: boolean;
-  value: object | string | any[];
-  dropdownMenuStyle: object;
-  multiple: boolean;
-  onPopupFocus: () => void;
-  onPopupScroll: () => void;
-  onMenuDeSelect: () => void;
-  onMenuSelect: () => void;
-  prefixCls: string;
-  menuItems: any[];
-  inputValue: string;
-  visible: boolean;
-  firstActiveValue: string;
-  backfillValue: string;
-}
-
-export default class DropdownMenu extends React.Component<
-  DropdownMenuProps,
-  any
-> {
-  static displayName = "DropdownMenu";
-
-  static propTypes: DropdownMenuProps = {
+export default class DropdownMenu extends React.Component {
+  static propTypes = {
     defaultActiveFirstOption: PropTypes.bool,
     value: PropTypes.oneOfType([
       PropTypes.object,
       PropTypes.string,
-      PropTypes.array
+      PropTypes.array,
     ]),
     dropdownMenuStyle: PropTypes.object,
     multiple: PropTypes.bool,
@@ -46,20 +24,12 @@ export default class DropdownMenu extends React.Component<
     menuItems: PropTypes.array,
     inputValue: PropTypes.string,
     visible: PropTypes.bool,
-    backfillValue: PropTypes.string,
-    firstActiveValue: PropTypes.string
   };
-
-  lastInputValue: string = "";
-  lastVisible: boolean = false;
-  saveMenuRef: React.ReactNode = null;
-  menuRef: React.ReactNode = null;
-  firstActiveItem: any = null;
 
   constructor(props) {
     super(props);
     this.lastInputValue = props.inputValue;
-    this.saveMenuRef = saveRef(this, "menuRef");
+    this.saveMenuRef = saveRef(this, 'menuRef');
   }
 
   componentDidMount() {
@@ -91,11 +61,10 @@ export default class DropdownMenu extends React.Component<
 
     if (itemComponent) {
       const scrollIntoViewOpts = {
-        alignWithTop: false,
-        onlyScrollIfNeeded: true
+        onlyScrollIfNeeded: true,
       };
       if (
-        (!props.value || (props.value as string).length === 0) &&
+        (!props.value || props.value.length === 0) &&
         props.firstActiveValue
       ) {
         scrollIntoViewOpts.alignWithTop = true;
@@ -106,7 +75,7 @@ export default class DropdownMenu extends React.Component<
       raf(() => {
         scrollIntoView(
           itemComponent,
-          findDOMNode(this.menuRef as React.ReactInstance),
+          findDOMNode(this.menuRef),
           scrollIntoViewOpts
         );
       });
@@ -124,23 +93,19 @@ export default class DropdownMenu extends React.Component<
       onMenuSelect,
       inputValue,
       firstActiveValue,
-      backfillValue
+      backfillValue,
     } = props;
     if (menuItems && menuItems.length) {
-      const menuProps = {
-        onDeselect: null,
-        onSelect: null,
-        onClick: null
-      };
+      const menuProps = {};
       if (multiple) {
-        menuProps.onDeselect = props.onMenuDeSelect;
+        menuProps.onDeselect = props.onMenuDeselect;
         menuProps.onSelect = onMenuSelect;
       } else {
         menuProps.onClick = onMenuSelect;
       }
 
       const selectedKeys = getSelectKeys(menuItems, value);
-      const activeKeyProps = { activeKey: "" };
+      const activeKeyProps = {};
 
       let clonedMenuItems = menuItems;
       if (selectedKeys.length || firstActiveValue) {
@@ -161,7 +126,7 @@ export default class DropdownMenu extends React.Component<
             return cloneElement(item, {
               ref: ref => {
                 this.firstActiveItem = ref;
-              }
+              },
             });
           }
           return item;
@@ -182,12 +147,9 @@ export default class DropdownMenu extends React.Component<
       }
 
       // clear activeKey when inputValue change
-      const lastValue = value && value[(value as string).length - 1];
-      if (
-        inputValue !== this.lastInputValue &&
-        (!lastValue || lastValue !== backfillValue)
-      ) {
-        activeKeyProps.activeKey = "";
+      const lastValue = value && value[value.length - 1];
+      if (inputValue !== this.lastInputValue && (!lastValue || lastValue !== backfillValue)) {
+        activeKeyProps.activeKey = '';
       }
       return (
         <Menu
@@ -212,7 +174,7 @@ export default class DropdownMenu extends React.Component<
     const renderMenu = this.renderMenu();
     return renderMenu ? (
       <div
-        style={{ overflow: "auto", }}
+        style={{ overflow: 'auto', }}
         onFocus={this.props.onPopupFocus}
         onMouseDown={preventDefaultEvent}
         onScroll={this.props.onPopupScroll}
@@ -222,3 +184,5 @@ export default class DropdownMenu extends React.Component<
     ) : null;
   }
 }
+
+DropdownMenu.displayName = 'DropdownMenu';

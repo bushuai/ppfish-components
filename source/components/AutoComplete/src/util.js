@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 export function toTitle(title) {
   if (typeof title === 'string') {
@@ -19,7 +19,7 @@ export function getValuePropValue(child) {
   if (child.key) {
     return child.key;
   }
-  if (child && child.type.isSelectOptGroup && props.label) {
+  if (child.type && child.type.isSelectOptGroup && props.label) {
     return props.label;
   }
   throw new Error(
@@ -76,7 +76,7 @@ export function getMapKey(value) {
   return `${typeof value}-${value}`;
 }
 
-export function preventDefaultEvent(e: React.MouseEvent<Element>) {
+export function preventDefaultEvent(e) {
   e.preventDefault();
 }
 
@@ -108,8 +108,8 @@ export function getSelectKeys(menuItems, value) {
     return [];
   }
   let selectedKeys = [];
-  React.Children.forEach(menuItems, (item: any) => {
-    if (item.isMenuItemGroup) {
+  React.Children.forEach(menuItems, item => {
+    if (item.type.isMenuItemGroup) {
       selectedKeys = selectedKeys.concat(
         getSelectKeys(item.props.children, value)
       );
@@ -124,7 +124,7 @@ export function getSelectKeys(menuItems, value) {
   return selectedKeys;
 }
 
-export const UNSELECTABLE_STYLE: React.CSSProperties = {
+export const UNSELECTABLE_STYLE = {
   userSelect: 'none',
   WebkitUserSelect: 'none',
 };
@@ -136,7 +136,7 @@ export const UNSELECTABLE_ATTRIBUTE = {
 export function findFirstMenuItem(children) {
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
-    if (child.isMenuItemGroup) {
+    if (child.type.isMenuItemGroup) {
       const found = findFirstMenuItem(child.props.children);
       if (found) {
         return found;
@@ -184,10 +184,8 @@ export function validateOptionValue(value, props) {
   }
 }
 
-type SaveRefFunc = (node: React.ReactNode) => void
-
-export function saveRef(instance: React.ReactInstance, name: string): SaveRefFunc {
-  return (node: React.ReactNode) => {
+export function saveRef(instance, name) {
+  return (node) => {
     instance[name] = node;
   };
 }

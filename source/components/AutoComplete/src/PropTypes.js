@@ -1,13 +1,6 @@
 import PropTypes from 'prop-types';
 
-export interface valueTypeProps {
-  labelInValue: boolean
-  mode: 'tags' | 'multiple'
-  multiple: string
-  tags: string
-}
-
-function valueType(props: valueTypeProps, propName: string, componentName: string) {
+function valueType(props, propName, componentName) {
   const basicType = PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
@@ -22,7 +15,6 @@ function valueType(props: valueTypeProps, propName: string, componentName: strin
       PropTypes.arrayOf(labelInValueShape),
       labelInValueShape,
     ]);
-    // @ts-ignore
     const error = validate(...arguments);
     if (error) {
       return new Error(
@@ -44,7 +36,6 @@ function valueType(props: valueTypeProps, propName: string, componentName: strin
       PropTypes.arrayOf(basicType),
       basicType,
     ]);
-    // @ts-ignore
     return validate(...arguments);
   }
 }

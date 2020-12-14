@@ -1,9 +1,9 @@
 import Trigger from 'rc-trigger';
-import * as React from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import DropdownMenu from './DropdownMenu';
-import * as ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom';
 import { isSingleMode, saveRef } from './util';
 
 Trigger.displayName = 'Trigger';
@@ -27,46 +27,7 @@ const BUILT_IN_PLACEMENTS = {
   },
 };
 
-export type SelectItemValue = { label: string | React.ReactNode, title: string, name: string }
-export type SelectValue = string | string[] | SelectItemValue | SelectItemValue[]
-
-export interface SelectTriggerProps {
-  onPopupFocus?: () => void
-  onPopupScroll?: () => void
-  dropdownMatchSelectWidth?: boolean
-  dropdownAlign?: object
-  visible?: boolean
-  disabled?: boolean
-  showSearch?: boolean
-  dropdownClassName?: string
-  multiple?: boolean
-  inputValue?: string
-  filterOption?: boolean | (() => [])
-  options: any[]
-  prefixCls?: string
-  popupClassName?: string
-  showAction?: string[]
-  onMenuSelect?: (object) => void
-  onMenuDeselect?: (object) => void
-  value: string
-  backfillValue?: string
-  firstActiveValue?: SelectValue | SelectValue[]
-  defaultActiveFirstOption?: boolean
-  dropdownMenuStyle?: React.CSSProperties
-  transitionName?: string
-  animation?: string
-  dropdownStyle?: React.CSSProperties
-  onDropdownVisibleChange?: (visible: boolean) => void
-  getPopupContainer?: (node: React.ReactNode) => HTMLElement
-}
-
-export interface SelectTriggerState {
-  dropdownWidth: any
-}
-
-export default class SelectTrigger extends React.Component<SelectTriggerProps, SelectTriggerState> {
-  static displayName = 'SelectTrigger';
-
+export default class SelectTrigger extends React.Component {
   static propTypes = {
     onPopupFocus: PropTypes.func,
     onPopupScroll: PropTypes.func,
@@ -89,11 +50,6 @@ export default class SelectTrigger extends React.Component<SelectTriggerProps, S
     showAction: PropTypes.arrayOf(PropTypes.string),
   };
 
-  saveDropdownMenuRef: (node: React.ReactNode) => void
-  saveTriggerRef: React.Ref<HTMLElement> = null
-  dropdownMenuRef: { menuRef: React.ReactNode }= null
-  triggerRef: typeof Trigger = null
-
   constructor(props) {
     super(props);
 
@@ -114,8 +70,7 @@ export default class SelectTrigger extends React.Component<SelectTriggerProps, S
   }
 
   setDropdownWidth = () => {
-    const width = (ReactDOM.findDOMNode(this) as HTMLElement).offsetWidth;
-
+    const width = ReactDOM.findDOMNode(this).offsetWidth;
     if (width !== this.state.dropdownWidth) {
       this.setState({ dropdownWidth: width });
     }
@@ -223,3 +178,5 @@ export default class SelectTrigger extends React.Component<SelectTriggerProps, S
     );
   }
 }
+
+SelectTrigger.displayName = 'SelectTrigger';
