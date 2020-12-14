@@ -19,7 +19,7 @@ export function getValuePropValue(child) {
   if (child.key) {
     return child.key;
   }
-  if (child && child.isSelectOptGroup && props.label) {
+  if (child && child.type.isSelectOptGroup && props.label) {
     return props.label;
   }
   throw new Error(

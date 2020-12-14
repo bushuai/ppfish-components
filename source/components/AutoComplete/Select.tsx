@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import RcSelect, { Option, OptGroup } from './src/index.js';
+import RcSelect, { Option, OptGroup } from './src/index';
 import classNames from 'classnames';
 import warning from 'warning';
 import { SelectValue } from './src/SelectTrigger'
