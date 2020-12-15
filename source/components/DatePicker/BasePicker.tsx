@@ -53,13 +53,13 @@ export type BasePickerProps = {
   format?: string;
   placement?: Placement;
   prefixCls?: string;
-  getPopupContainer?: (node: HTMLElement) => HTMLElement;
+  getPopupContainer?: (node: HTMLElement) => HTMLElement | Node | ParentNode;
   showTrigger?: boolean;
   firstDayOfWeek?: number
-  disabledDate?: () =>void
-  footer?: () => void
+  disabledDate?:  (date?: Date, mode?: Mode) => boolean;
+  footer?: () => HTMLElement | undefined
   showWeekNumber?: boolean
-  showTime: boolean
+  showTime?: boolean
 
   value?: Date;
   onFocus?: (e: React.FocusEvent) => void;

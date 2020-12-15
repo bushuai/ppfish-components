@@ -3,9 +3,9 @@ import * as ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 interface PortalProps {
-  getContainer: () => HTMLElement
-  children: React.ReactNode | React.ReactChildren
-  didUpdate: (props: PortalProps) => void
+  getContainer?: () => HTMLElement
+  children?: React.ReactNode | React.ReactChildren
+  didUpdate?: (props: PortalProps) => void
 }
 
 export default class Portal extends React.Component<PortalProps> {

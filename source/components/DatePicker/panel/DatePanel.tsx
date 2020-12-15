@@ -48,7 +48,7 @@ interface DatePanelProps {
   prefixCls?: string
   format?: string //basePicker
   value?: Date //basePicker
-  onPick?: (value?: Date[], isKeepPannel?: boolean, isConfirmValue?: boolean) => void //basePicker
+  onPick?: (value?: Date, isKeepPannel?: boolean, isConfirmValue?: boolean) => void //basePicker
   onCancelPicked?: () => void //basePicker
   yearCount?: number
   showWeekNumber?: boolean
@@ -56,13 +56,19 @@ interface DatePanelProps {
   mode?: Mode
   disabledDate?: (date: Date, mode: string) => boolean
   firstDayOfWeek?: number
-  footer?: () => void
+  footer?: () => (HTMLElement | undefined)
   showTime?: boolean
   showTimeCurrent?: boolean
   timeSelectableRange?: string | string[]
   defaultTimeValue?: Date
   timeSelectMode?: "TimePicker" | "TimeSelect"
-  timeSelectModeProps?: object
+  timeSelectModeProps?: {
+    start?: string,
+    end?: string,
+    step?: string,
+    minTime?: string,
+    maxTime?: string,
+  }
 }
 
 interface DatePanelState {

@@ -29,7 +29,7 @@ const mkdirp = require('mkdirp');
 
 
 // let fileName = './dist/index.js';
-let entryFile = 'source/components/index.js';
+let entryFile = 'source/components/index.ts';
 
 const MEMO = new Map();
 const DEEP_PATH = [];

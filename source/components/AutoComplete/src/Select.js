@@ -2,7 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { polyfill } from 'react-lifecycles-compat';
-import KeyCode from '../../../utils/KeyCode.js';
+import KeyCode from '../../../utils/KeyCode.ts';
 import classnames from 'classnames';
 import Animate from 'rc-animate';
 import classes from 'component-classes';

@@ -24,8 +24,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { polyfill } from 'react-lifecycles-compat';
-import KeyCode from '../../../utils/KeyCode.js';
-import { shallowEqual } from '../../../utils/other.js';
+import KeyCode from '../../../utils/KeyCode.ts';
+import { shallowEqual } from '../../../utils/other.ts';
 import raf from 'raf';
 
 import SelectTrigger from './SelectTrigger';

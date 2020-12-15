@@ -28,7 +28,7 @@ const clearHours = function(time) {
 const WEEKS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 interface DateTableProps {
-  disabledDate?: (date: Date, mode?: Mode) => boolean;
+  disabledDate?: (date?: Date, mode?: Mode) => boolean;
   showWeekNumber?: boolean;
   minDate?: Date;
   maxDate?: Date;

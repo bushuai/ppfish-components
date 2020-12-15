@@ -55,7 +55,7 @@ interface TimeSpinnerProps {
   isShowSeconds?: boolean
   selectableRange?: Array<{ start: Date, end: Date }>[]
   onChange?: (date: PanelData) => void
-  onSelectRangeChange?: (value: any) => void
+  onSelectRangeChange?: (start?: number, end?: number) => void
   prefixCls?: string
 }
 
@@ -149,11 +149,8 @@ class TimeSpinner extends React.Component<TimeSpinnerProps, TimeSpinnerState> {
 
   _handleScroll(_type) {
     const value = Math.min(
-      Math.floor(
-        (this.refs[_type].refs.wrap.scrollTop - SCROLL_AJUST_VALUE) / 32 + 3
-      ),
-      59
-    );
+    // @ts-ignore
+    Math.floor((this.refs[_type].refs.wrap.scrollTop - SCROLL_AJUST_VALUE) / 32 + 3), 59);
     this.handleChange(_type, value);
   }
 
@@ -171,12 +168,15 @@ class TimeSpinner extends React.Component<TimeSpinnerProps, TimeSpinnerState> {
 
   _ajustScrollTop({ hours, minutes, seconds }) {
     if (hours != null) {
+      // @ts-ignore
       this.refs.hours.refs.wrap.scrollTop = calcScrollTop(hours);
     }
     if (minutes != null) {
+      // @ts-ignore
       this.refs.minutes.refs.wrap.scrollTop = calcScrollTop(minutes);
     }
     if (this.props.isShowSeconds && seconds != null) {
+      // @ts-ignore
       this.refs.seconds.refs.wrap.scrollTop = calcScrollTop(seconds);
     }
   }
@@ -213,7 +213,7 @@ class TimeSpinner extends React.Component<TimeSpinnerProps, TimeSpinnerState> {
             return (
               <li
                 key={idx}
-                onClick={() => this.handleChange('hours', idx, disabled)}
+                onClick={() => this.handleChange('hours', idx, Boolean(disabled))}
                 className={classNames(`${prefixCls}-time-spinner__item`, {
                   active: idx === hours,
                   disabled: disabled

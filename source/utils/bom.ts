@@ -58,7 +58,7 @@ export const checkFullscreen = function() {
 
 let cached;
 
-export const getScrollBarSize = function(fresh) {
+export const getScrollBarSize = function(fresh?: boolean) {
   if (fresh || cached === undefined) {
     const inner = document.createElement("div");
     inner.style.width = "100%";

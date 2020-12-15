@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from 'react-dom';
-import {Layout, Menu, Icon, FooterToolbar, Button} from '../../../source/components';
+import {Layout, Menu, Icon, FooterToolbar, Button} from '../../../source/components/index.ts';
 import '../../static/Icons';
 const {Header, Content, Sider} = Layout;
 const DEMOIconProps = {

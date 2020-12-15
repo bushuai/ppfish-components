@@ -3,14 +3,14 @@ import * as ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 
 interface ContainerRenderProps {
-  autoMount: boolean;
-  autoDestroy: boolean;
-  visible: boolean;
-  forceRender: boolean;
-  parent: React.Component & { _component: any };
-  getComponent: (props: any) => React.DOMElement<ContainerRenderProps, any>;
-  getContainer: () => HTMLElement;
-  children: ({ renderComponent, removeContainer }) => React.ReactNode;
+  autoMount?: boolean;
+  autoDestroy?: boolean;
+  visible?: boolean;
+  forceRender?: boolean;
+  parent?: React.Component & { _component: any };
+  getComponent?: (props?: any) => React.ReactElement<any>
+  getContainer?: () => HTMLElement;
+  children?: ({ renderComponent, removeContainer }) => React.ReactNode;
 }
 
 export default class ContainerRender extends React.Component<

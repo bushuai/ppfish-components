@@ -7,6 +7,7 @@ import EllipsisText from "./EllipsisText";
 /* eslint react/no-did-mount-set-state: 0 */
 /* eslint no-param-reassign: 0 */
 
+// @ts-ignore
 const isSupportLineClamp = document.body.style.webkitLineClamp !== undefined;
 
 interface EllipsisProps {

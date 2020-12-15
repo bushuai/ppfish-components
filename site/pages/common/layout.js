@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router';
 import PropTypes from "prop-types";
 
-import {Row, Col} from '../../../source/components';
+import {Row, Col} from '../../../source/components/index.ts';
 import Affix from '../../../source/components/Affix/index.tsx';
 import locales from '../../locales';
 

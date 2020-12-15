@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from 'react-dom';
-import { Drawer, Menu, Icon, Select } from '../../../source/components';
+import { Drawer, Menu, Icon, Select } from '../../../source/components/index.ts';
 
 const Option = Select.Option;
 

@@ -75,10 +75,10 @@ export type AnimateChildProps =
 
 export interface AnimateChildState {
   node: React.ReactNode
-  endListeners: [
+  endListeners: {
     transitionend: [],
     animationend: []
-  ]
+  }
   timeoutMap: object
 }
 

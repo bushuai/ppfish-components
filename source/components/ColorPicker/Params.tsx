@@ -47,11 +47,8 @@ class Params extends React.Component<ParamsProps, ParamsState> {
   };
 
   static getDerivedStateFromProps: React.GetDerivedStateFromProps<ParamsProps, ParamsState> = (nextProps, prevState) => {
-    const newState: ParamsState = {
-      color: {},
-      hex: '',
-      mode: 'RGB'
-    }
+    // @ts-ignore
+    const newState: ParamsState = {}
 
     if ('color' in nextProps) {
       newState.color = nextProps.color;

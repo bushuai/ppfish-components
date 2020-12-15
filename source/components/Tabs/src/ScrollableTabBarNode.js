@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { setTransform, isTransformSupported } from './utils';
-import { addEventListener } from '../../../utils/dom/index.js';
+import { addEventListener } from '../../../utils/dom/index.ts';
 import debounce from 'lodash/debounce';
 
 export default class ScrollableTabBarNode extends React.Component {

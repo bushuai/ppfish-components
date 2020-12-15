@@ -1,12 +1,12 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import TimeSpinner from '../basic/TimeSpinner.js';
+import TimeSpinner from '../basic/TimeSpinner';
 import { limitRange, isLimitRange, parseDate } from '../../../utils/date';
 import { DEFAULT_FORMATS } from '../constants';
 import Locale from '../../../utils/date/locale';
 import isEqual from 'lodash/isEqual';
-import Panel from 'components/ColorPicker/Panel.js';
+import Panel from 'components/ColorPicker/Panel';
 
 const mapPropsToState = (props) => {
   const { format, value, selectableRange } = props;
@@ -44,6 +44,7 @@ interface TimePanelState {
 }
 
 export type PanelData = {
+  type: string
   hours?: number
   minutes?: number
   seconds?: number

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from 'react-dom';
-import { Drawer, Menu, Button } from '../../../source/components';
+import { Drawer, Menu, Button } from '../../../source/components/index.ts';
 import { Resizable } from 'react-resizable';
 import './drawerDragRight.less';
 

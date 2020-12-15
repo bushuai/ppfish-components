@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* Modified from https://github.com/sdecima/javascript-detect-element-resize
  * version: 0.5.3
  *

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as PropTypes from "prop-types";
 import RcDrawer from "./src";
-import { RcDrawerProps, RcDrawerState } from "./src/RcDrawer";
+import { RcDrawerState } from "./src/Drawer";
 
 type EventType =
   | React.KeyboardEvent<HTMLDivElement>

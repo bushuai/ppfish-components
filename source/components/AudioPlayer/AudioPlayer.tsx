@@ -338,7 +338,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
               src={src}
               preload={preload}
               loop={loop}
-              volume={currentVolume / 100}
+              // volume={currentVolume / 100}
               onCanPlay={() => this.controlAudio("allTime")}
               onTimeUpdate={e => this.controlAudio("getCurrentTime")}
               onLoadedMetadata={onLoadedMetadata}

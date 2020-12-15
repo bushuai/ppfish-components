@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import BasePicker from './BasePicker.js';
-import TimePanel from './panel/TimePanel.js';
+import BasePicker from './BasePicker';
+import TimePanel from './panel/TimePanel';
 import { TYPE_VALUE_RESOLVER_MAP, DEFAULT_FORMATS } from './constants';
 import debounce from 'lodash/debounce';
 import TimeSelect from './TimeSelect';

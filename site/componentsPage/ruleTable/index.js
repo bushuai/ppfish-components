@@ -1,5 +1,5 @@
 import React from "react";
-import {Row, Col} from '../../../source/components';
+import {Row, Col} from '../../../source/components/index.ts';
 import './style.less';
 
 export default class ruleTable extends React.Component {

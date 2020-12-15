@@ -1,5 +1,5 @@
 import React from "react";
-import {Row, Col, Divider} from '../../../source/components';
+import {Row, Col, Divider} from '../../../source/components/index.ts';
 import './style.less';
 
 export default class ruleNumber extends React.Component {

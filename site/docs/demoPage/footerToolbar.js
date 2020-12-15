@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from 'react-dom';
-import {FooterToolbar, Button} from '../../../source/components';
+import {FooterToolbar, Button} from '../../../source/components/index.ts';
 
 class Demo extends React.Component {
   constructor(props) {

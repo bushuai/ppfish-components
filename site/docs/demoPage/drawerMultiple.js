@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from 'react-dom';
-import { Drawer, Button } from '../../../source/components';
+import { Drawer, Button } from '../../../source/components/index.ts';
 
 class Demo extends React.Component {
   constructor(props) {

@@ -124,6 +124,7 @@ class Collapse extends Component<CollapseProps, CollapseState> {
       if (this.props.accordion) {
         activeKey = activeKey[0] === key ? [] : [key];
       } else {
+        // @ts-ignore
         activeKey = [...activeKey];
         const index = activeKey.indexOf(key);
         const isActive = index > -1;

@@ -2,6 +2,7 @@ import { ExtendableError } from './errors';
 
 class ErrorConditionFailed extends ExtendableError {
   constructor(...args) {
+    // @ts-ignore
     super(args);
   }
 }

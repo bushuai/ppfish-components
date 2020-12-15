@@ -1,6 +1,6 @@
 import React from "react";
 import copy from "copy-to-clipboard";
-import {message} from "../../../source/components";
+import {message} from '../../../source/components/index.ts';
 import "./style.less";
 
 export default class RuleText extends React.Component {

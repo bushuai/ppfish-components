@@ -1040,7 +1040,7 @@ class Select extends React.Component<SelectProps, SelectState> {
             {// 没有值的情况下显示placeholder
             ((!selectValue.length && mode === "single") ||
               (!selectValueForMultiplePanel.length && mode === "multiple")) && (
-              <div unselectable={true} className={`${selectionCls}-placeholder`}>
+              <div className={`${selectionCls}-placeholder`}>
                 {placeholder}
               </div>
             )}

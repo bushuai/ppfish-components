@@ -40,6 +40,7 @@ export default class TimeSelect extends BasePicker {
   isDateValid(value) {
     return (
       super.isDateValid(value) &&
+      // @ts-ignore
       TimeSelectPanel.isValid(this.dateToStr(value), this.props)
     );
   }

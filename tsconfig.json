@@ -12,6 +12,7 @@
       "dom.iterable",
       "es2016"
     ],
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "baseUrl": "./source/"

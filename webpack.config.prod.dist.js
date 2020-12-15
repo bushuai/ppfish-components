@@ -44,7 +44,7 @@ module.exports = {
   // and https://webpack.github.io/docs/configuration.html#devtool
   devtool: 'source-map',
   entry: {
-    ppfish: './source/components/index.js'
+    ppfish: './source/components/index.ts'
   },
   target: 'web', // necessary per https://webpack.github.io/docs/testing.html#compile-and-test
   output: {

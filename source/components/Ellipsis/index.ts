@@ -1,3 +1,4 @@
+import Ellipsis from './Ellipsis'
 import './style/index.less';
 
-export { default as Ellipsis } from './Ellipsis';
+export default Ellipsis

@@ -106,12 +106,8 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const newState: ColorPickerState = {
-      color: '',
-      alpha: nextProps.defaultAlpha,
-      visible: false,
-      colorHistory: []
-    }
+    // @ts-ignore
+    const newState: ColorPickerState = {}
 
     if ('color' in nextProps) {
       newState.color = nextProps.color;
@@ -125,7 +121,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
   saveTriggerRef = null
   triggerInstance = null
 
-  constructor(props) {
+  constructor(props: ColorPickerProps) {
     super(props);
 
     const alpha = typeof props.alpha === 'undefined'

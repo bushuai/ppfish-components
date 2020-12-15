@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {enquireScreen, unenquireScreen} from 'enquire-js';
 
-import {Divider, BackTop, Icon, Row, Col, Menu, Drawer, Affix} from '../../../source/components';
+import {Divider, BackTop, Icon, Row, Col, Menu, Drawer, Affix} from '../../../source/components/index.ts';
 import Layout from '../common/layout';
 import locales from '../../locales';
 import {components, plainComponents} from '../../componentsPage';

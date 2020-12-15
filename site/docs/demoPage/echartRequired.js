@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from 'react-dom';
 // 导入core library
-import EchartCore from '../../../source/components/Echart/core';
+import EchartCore from '../../../source/components/Echart/core.tsx';
 // 按需导入echarts模块
 import echarts from 'echarts/lib/echarts'; //必须
 import 'echarts/lib/chart/line';

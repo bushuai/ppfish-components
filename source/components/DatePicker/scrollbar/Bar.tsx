@@ -67,6 +67,7 @@ export class Bar extends React.Component<BarProps> {
 
     on(document, 'mousemove', this.mouseMoveDocumentHandler);
     on(document, 'mouseup', this.mouseUpDocumentHandler);
+    // @ts-ignore
     document.onselectstart = () => false;
   }
 
@@ -87,6 +88,7 @@ export class Bar extends React.Component<BarProps> {
     this.cursorDown = false;
     this[this.bar.axis] = 0;
     off(document, 'mousemove', this.mouseMoveDocumentHandler);
+    // @ts-ignore
     document.onselectstart = null;
   }
 
